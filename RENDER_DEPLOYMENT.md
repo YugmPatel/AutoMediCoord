@@ -16,6 +16,7 @@ Your ED-FOx project is already structured correctly:
 ```
 ED-FOx/
 ├── app.py                    # Main entry point for Render
+├── render.yaml               # Render auto-deploy configuration
 ├── requirements.txt          # Python dependencies
 ├── .env.example             # Environment template
 ├── .env                     # Your secrets (DO NOT COMMIT)
@@ -26,6 +27,8 @@ ED-FOx/
 │   └── utils.py            # Configuration & logging
 └── README.md
 ```
+
+**Note:** The [`render.yaml`](render.yaml:1) file enables automatic deployment and PR previews on Render.
 
 ## 🚀 Step-by-Step Deployment
 
@@ -60,18 +63,37 @@ ED-FOx/
    git push origin main
    ```
 
-### Step 3: Create Render Background Worker
+### Step 3: Deploy to Render (Automatic with render.yaml)
+
+**Option A: Automatic Deployment (Recommended)**
+
+The [`render.yaml`](render.yaml:1) file is already configured for automatic deployment:
 
 1. **Sign up/Login to Render:**
    - Go to [render.com](https://render.com)
    - Create an account or sign in
 
-2. **Create New Background Worker:**
-   - Click **"+ New"** → **"Background Worker"**
+2. **Connect Repository:**
+   - Click **"New" → "Blueprint"**
    - Connect your GitHub account
    - Select your **ED-FOx** repository
+   - Render will automatically detect `render.yaml`
 
-3. **Configure the Service:**
+3. **Add ANTHROPIC_API_KEY:**
+   - During setup, you'll be prompted to add the API key
+   - This is the **only** environment variable you need to set manually
+   - All other variables are auto-configured in `render.yaml`
+
+4. **Deploy:**
+   - Click **"Apply"**
+   - Render will automatically build and deploy your agents
+
+**Option B: Manual Configuration**
+
+If you prefer manual setup:
+
+1. Click **"+ New"** → **"Background Worker"**
+2. Configure:
    ```
    Name: ed-fox-agents
    Environment: Python
@@ -79,24 +101,15 @@ ED-FOx/
    Start Command: python app.py
    ```
 
-4. **Add Environment Variables:**
-   Click **"Environment"** and add these:
+3. Add Environment Variables:
    
    | Key | Value | Notes |
    |-----|-------|-------|
    | `DEPLOYMENT_MODE` | `agentverse` | **Required** |
    | `ANTHROPIC_API_KEY` | `your_key` | **Required** |
-   | `ED_COORDINATOR_SEED` | `unique_seed_1` | Optional |
-   | `RESOURCE_MANAGER_SEED` | `unique_seed_2` | Optional |
-   | `SPECIALIST_COORDINATOR_SEED` | `unique_seed_3` | Optional |
-   | `LAB_SERVICE_SEED` | `unique_seed_4` | Optional |
-   | `PHARMACY_SEED` | `unique_seed_5` | Optional |
-   | `BED_MANAGEMENT_SEED` | `unique_seed_6` | Optional |
    | `LOG_LEVEL` | `INFO` | Optional |
 
-5. **Deploy:**
-   - Click **"Create Background Worker"**
-   - Render will build and deploy your agents
+4. Click **"Create Background Worker"**
 
 ### Step 4: Monitor Deployment
 
