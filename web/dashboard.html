@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDFlow AI - Live Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            grid-template-rows: 80px 1fr;
+            gap: 20px;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .header .status {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .agents-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        .chat-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metrics-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 10px;
+        }
+
+        .agent-item {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .agent-address {
+            font-size: 11px;
+            color: #6b7280;
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 8px;
+        }
+
+        .agent-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .agent-status.online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .agent-status.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 85%;
+        }
+
+        .message.user {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.agent {
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+
+        .message.system {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .message-header {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            opacity: 0.8;
+        }
+
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 6px;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+        }
+
+        .input-group button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .input-group button:hover {
+            background: #5568d3;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .metric-subtext {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 6px;
+        }
+
+        .activity-log {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            font-size: 13px;
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>🏥 EDFlow AI Dashboard</h1>
+                <p style="color: #6b7280; margin-top: 5px;">Emergency Department Flow Optimizer</p>
+            </div>
+            <div class="status">
+                <span class="status-dot"></span>
+                <span style="font-weight: 600;">System Online</span>
+                <span style="color: #6b7280;" id="connection-status">Connecting...</span>
+            </div>
+        </div>
+
+        <!-- Left Panel: Agents -->
+        <div class="agents-panel">
+            <div class="panel-title">🤖 Active Agents</div>
+            <div id="agents-list">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Center Panel: Chat Interface -->
+        <div class="chat-panel">
+            <div style="padding: 20px; background: #f9fafb; border-radius: 15px 15px 0 0; border-bottom: 1px solid #e5e7eb;">
+                <div class="panel-title" style="margin: 0;">💬 Agent Communication</div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message system">
+                    <div class="message-content">
+                        🎉 EDFlow AI system initialized. Send patient data or chat with agents.
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="sendSTEMI()">🚨 STEMI Patient</button>
+                    <button class="quick-btn" onclick="sendStroke()">🧠 Stroke Patient</button>
+                    <button class="quick-btn" onclick="sendTrauma()">🚑 Trauma Patient</button>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <input type="text" id="message-input" placeholder="Type a message or command..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Metrics -->
+        <div class="metrics-panel">
+            <div class="panel-title">📊 Real-Time Metrics</div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Total Patients</div>
+                <div class="metric-value" id="total-patients">0</div>
+                <div class="metric-subtext">Since system start</div>
+            </div>
+
+            <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="metric-label">Active Patients</div>
+                <div class="metric-value" id="active-patients">0</div>
+                <div class="metric-subtext">Currently in ED</div>
+            </div>
+
+            <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="metric-label">Protocols Activated</div>
+                <div class="metric-value" id="protocols-activated">0</div>
+                <div class="metric-subtext">STEMI, Stroke, Trauma, Pediatric</div>
+            </div>
+
+            <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="metric-label">Avg AI Response</div>
+                <div class="metric-value" id="avg-response-time">0.0s</div>
+                <div class="metric-subtext">Target: <2s</div>
+            </div>
+
+            <div class="panel-title" style="margin-top: 20px;">📡 Recent Activity</div>
+            <div class="activity-log" id="activity-log">
+                <div class="activity-item">
+                    <div class="activity-time">Just now</div>
+                    <div>System initialized</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let reconnectInterval = null;
+
+        // Connect to WebSocket
+        function connectWebSocket() {
+            ws = new WebSocket('ws://localhost:8080/ws');
+
+            ws.onopen = () => {
+                console.log('Connected to EDFlow AI');
+                document.getElementById('connection-status').textContent = 'Connected';
+                if (reconnectInterval) {
+                    clearInterval(reconnectInterval);
+                    reconnectInterval = null;
+                }
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleMessage(data);
+            };
+
+            ws.onclose = () => {
+                console.log('Disconnected from EDFlow AI');
+                document.getElementById('connection-status').textContent = 'Disconnected';
+                // Try to reconnect
+                if (!reconnectInterval) {
+                    reconnectInterval = setInterval(() => {
+                        console.log('Attempting to reconnect...');
+                        connectWebSocket();
+                    }, 3000);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        // Handle incoming messages
+        function handleMessage(data) {
+            console.log('Received:', data);
+
+            if (data.type === 'connection') {
+                updateMetrics(data.metrics);
+                updateAgents(data.agents);
+            } else if (data.type === 'patient_processed') {
+                addSystemMessage(`Patient ${data.data.patient_id} analyzed: ${data.data.analysis.protocol.toUpperCase()} protocol, Acuity ${data.data.analysis.acuity_level}`);
+                updateMetrics();
+                addActivity(`Patient ${data.data.patient_id} - ${data.data.analysis.protocol.toUpperCase()} protocol activated`);
+            } else if (data.type === 'chat_message') {
+                addChatMessage(data.data.user, data.data.message, false);
+            } else if (data.type === 'system_message') {
+                addSystemMessage(data.data.message);
+            }
+        }
+
+        // Update metrics display
+        async function updateMetrics(metrics = null) {
+            if (!metrics) {
+                const response = await fetch('http://localhost:8080/api/metrics');
+                const data = await response.json();
+                metrics = data.metrics;
+            }
+
+            document.getElementById('total-patients').textContent = metrics.total_patients;
+            document.getElementById('active-patients').textContent = metrics.active_patients;
+            document.getElementById('protocols-activated').textContent = metrics.protocols_activated;
+            document.getElementById('avg-response-time').textContent = metrics.avg_response_time.toFixed(2) + 's';
+        }
+
+        // Update agents display
+        function updateAgents(agents) {
+            const agentsList = document.getElementById('agents-list');
+            agentsList.innerHTML = '';
+
+            const agentNames = {
+                'ed_coordinator': 'ED Coordinator',
+                'resource_manager': 'Resource Manager',
+                'specialist_coordinator': 'Specialist Coordinator',
+                'lab_service': 'Lab Service',
+                'pharmacy': 'Pharmacy',
+                'bed_management': 'Bed Management'
+            };
+
+            Object.entries(agents).forEach(([key, value]) => {
+                const div = document.createElement('div');
+                div.className = 'agent-item';
+                div.innerHTML = `
+                    <div class="agent-name">🤖 ${agentNames[key]}</div>
+                    <div class="agent-address">${value.address || 'Initializing...'}</div>
+                    <span class="agent-status ${value.status === 'online' ? 'online' : 'offline'}">
+                        ${value.status || 'initializing'}
+                    </span>
+                `;
+                agentsList.appendChild(div);
+            });
+        }
+
+        // Add chat message
+        function addChatMessage(user, content, isUser = true) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'agent'}`;
+            
+            const time = new Date().toLocaleTimeString();
+            messageDiv.innerHTML = `
+                <div class="message-header">${user}</div>
+                <div class="message-content">${content}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Add system message
+        function addSystemMessage(content) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message system';
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Add activity log
+        function addActivity(text) {
+            const activityLog = document.getElementById('activity-log');
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            const time = new Date().toLocaleTimeString();
+            item.innerHTML = `
+                <div class="activity-time">${time}</div>
+                <div>${text}</div>
+            `;
+            activityLog.insertBefore(item, activityLog.firstChild);
+            
+            // Keep only last 20 items
+            while (activityLog.children.length > 20) {
+                activityLog.removeChild(activityLog.lastChild);
+            }
+        }
+
+        // Send chat message
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (message && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'chat',
+                    message: message
+                }));
+                
+                addChatMessage('You', message, true);
+                input.value = '';
+                addActivity(`User message sent: ${message.substring(0, 50)}...`);
+            }
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Quick actions - Send predefined patient scenarios
+        async function sendSTEMI() {
+            const patientData = {
+                patient_id: `STEMI_${Date.now()}`,
+                complaint: "Severe crushing chest pain radiating to left arm",
+                vitals: {
+                    hr: 95,
+                    bp_sys: 145,
+                    bp_dia: 90,
+                    spo2: 96
+                }
+            };
+
+            addSystemMessage(`🚨 Processing STEMI patient: ${patientData.patient_id}`);
+            addActivity('STEMI patient submitted for processing');
+
+            const response = await fetch('http://localhost:8080/api/patient', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(patientData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                const analysis = result.analysis;
+                addSystemMessage(`✅ AI Analysis Complete (${result.response_time.toFixed(2)}s): Protocol ${analysis.protocol.toUpperCase()}, Acuity ${analysis.acuity_level}, Confidence ${(analysis.confidence * 100).toFixed(0)}%`);
+                updateMetrics();
+            }
+        }
+
+        async function sendStroke() {
+            const patientData = {
+                patient_id: `STROKE_${Date.now()}`,
+                complaint: "Sudden onset right-sided weakness and facial droop",
+                vitals: {
+                    hr: 88,
+                    bp_sys: 165,
+                    bp_dia: 95,
+                    spo2: 98
+                }
+            };
+
+            addSystemMessage(`🧠 Processing stroke patient: ${patientData.patient_id}`);
+            
+            const response = await fetch('http://localhost:8080/api/patient', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(patientData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                const analysis = result.analysis;
+                addSystemMessage(`✅ AI Analysis Complete (${result.response_time.toFixed(2)}s): Protocol ${analysis.protocol.toUpperCase()}, Acuity ${analysis.acuity_level}`);
+                updateMetrics();
+            }
+        }
+
+        async function sendTrauma() {
+            const patientData = {
+                patient_id: `TRAUMA_${Date.now()}`,
+                complaint: "Motor vehicle accident, chest trauma, altered mental status",
+                vitals: {
+                    hr: 125,
+                    bp_sys: 85,
+                    bp_dia: 55,
+                    spo2: 92
+                }
+            };
+
+            addSystemMessage(`🚑 Processing trauma patient: ${patientData.patient_id}`);
+            
+            const response = await fetch('http://localhost:8080/api/patient', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(patientData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                const analysis = result.analysis;
+                addSystemMessage(`✅ AI Analysis Complete (${result.response_time.toFixed(2)}s): Protocol ${analysis.protocol.toUpperCase()}, Acuity ${analysis.acuity_level}`);
+                updateMetrics();
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            connectWebSocket();
+            // Update metrics every 5 seconds
+            setInterval(updateMetrics, 5000);
+        };
+    </script>
+</body>
+</html>

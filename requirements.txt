@@ -1,11 +1,6 @@
 # Core Dependencies
-uagents>=1.0.5
-uagents-core>=1.0.5
-
-# LangGraph & LangChain
-langgraph>=0.2.0
-langchain>=0.3.0
-langchain-anthropic>=0.2.0
+uagents>=0.22.0
+uagents-core
 
 # AI & ML
 anthropic>=0.40.0
@@ -44,3 +39,4 @@ ruff>=0.2.0
 
 # Utilities
 uuid>=1.30
+psutil>=5.9.0

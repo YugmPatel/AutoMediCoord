@@ -1,5 +1,5 @@
 """
-All AutoMediCoord Data Models - Consolidated
+All EDFlow AI Data Models - Consolidated
 """
 
 from datetime import datetime
@@ -8,13 +8,17 @@ from enum import Enum
 from uagents import Model
 
 
-# Enums
+# ============================================================================
+# ENUMS
+# ============================================================================
+
 class AcuityLevel(str, Enum):
-    LEVEL_1 = "1"
-    LEVEL_2 = "2"
-    LEVEL_3 = "3"
-    LEVEL_4 = "4"
-    LEVEL_5 = "5"
+    LEVEL_1 = "1"  # Immediate life threat
+    LEVEL_2 = "2"  # High risk
+    LEVEL_3 = "3"  # Moderate risk
+    LEVEL_4 = "4"  # Low risk
+    LEVEL_5 = "5"  # Minimal risk
+
 
 class PatientStatus(str, Enum):
     ARRIVING = "arriving"
@@ -24,17 +28,20 @@ class PatientStatus(str, Enum):
     ADMITTED = "admitted"
     DISCHARGED = "discharged"
 
+
 class ResourceType(str, Enum):
     BED = "bed"
     EQUIPMENT = "equipment"
     ROOM = "room"
     STAFF = "staff"
 
+
 class ResourceStatus(str, Enum):
     AVAILABLE = "available"
     OCCUPIED = "occupied"
     RESERVED = "reserved"
     CLEANING = "cleaning"
+
 
 class ProtocolType(str, Enum):
     STEMI = "stemi"
@@ -43,13 +50,18 @@ class ProtocolType(str, Enum):
     PEDIATRIC = "pediatric"
     GENERAL = "general"
 
+
 class Priority(str, Enum):
     STAT = "stat"
     ASAP = "asap"
     URGENT = "urgent"
     ROUTINE = "routine"
 
-# Models
+
+# ============================================================================
+# PATIENT MODELS
+# ============================================================================
+
 class PatientArrivalNotification(Model):
     patient_id: str
     arrival_time: datetime
@@ -60,12 +72,18 @@ class PatientArrivalNotification(Model):
     priority: int
     demographics: Optional[Dict[str, Any]] = None
 
+
 class PatientUpdate(Model):
     patient_id: str
     status: str
     location: str
     timestamp: datetime
     additional_info: Optional[Dict[str, Any]] = None
+
+
+# ============================================================================
+# RESOURCE MODELS
+# ============================================================================
 
 class ResourceRequest(Model):
     request_id: str
@@ -76,6 +94,7 @@ class ResourceRequest(Model):
     requesting_agent: str
     timestamp: datetime
 
+
 class ResourceAllocation(Model):
     request_id: str
     resource_id: Optional[str] = None
@@ -85,12 +104,18 @@ class ResourceAllocation(Model):
     expires_at: Optional[datetime] = None
     timestamp: datetime
 
+
 class ResourceConflict(Model):
     conflict_id: str
     competing_requests: List[str]
     resource_type: str
     resolution_required: bool
     timestamp: datetime
+
+
+# ============================================================================
+# TEAM MODELS
+# ============================================================================
 
 class TeamActivationRequest(Model):
     activation_id: str
@@ -103,6 +128,7 @@ class TeamActivationRequest(Model):
     requesting_agent: str
     timestamp: datetime
 
+
 class TeamStatus(Model):
     activation_id: str
     team_type: str
@@ -111,6 +137,11 @@ class TeamStatus(Model):
     ready: bool
     location: str
     timestamp: datetime
+
+
+# ============================================================================
+# MESSAGE MODELS
+# ============================================================================
 
 class ProtocolActivation(Model):
     activation_id: str
@@ -122,6 +153,7 @@ class ProtocolActivation(Model):
     activating_agent: str
     metadata: Optional[Dict[str, Any]] = None
 
+
 class LabOrder(Model):
     order_id: str
     patient_id: str
@@ -129,6 +161,7 @@ class LabOrder(Model):
     priority: str
     ordered_by: str
     order_time: datetime
+
 
 class LabResult(Model):
     result_id: str
@@ -141,6 +174,7 @@ class LabResult(Model):
     result_time: datetime
     reported_by: str
 
+
 class MedicationOrder(Model):
     order_id: str
     patient_id: str
@@ -152,6 +186,7 @@ class MedicationOrder(Model):
     ordered_by: str
     order_time: datetime
 
+
 class MedicationDelivery(Model):
     delivery_id: str
     order_id: str
@@ -160,6 +195,7 @@ class MedicationDelivery(Model):
     status: str
     delivered_by: Optional[str] = None
     delivery_time: Optional[datetime] = None
+
 
 class BedRequest(Model):
     request_id: str
@@ -170,6 +206,7 @@ class BedRequest(Model):
     request_time: datetime
     isolation_needed: bool = False
 
+
 class BedAssignment(Model):
     assignment_id: str
     request_id: str
@@ -179,6 +216,7 @@ class BedAssignment(Model):
     assigned: bool
     assignment_time: Optional[datetime] = None
 
+
 class StatusUpdate(Model):
     update_id: str
     entity_type: str
@@ -187,6 +225,7 @@ class StatusUpdate(Model):
     timestamp: datetime
     updated_by: str
     details: Optional[Dict[str, Any]] = None
+
 
 class Alert(Model):
     alert_id: str
@@ -198,12 +237,18 @@ class Alert(Model):
     target_agents: Optional[List[str]] = None
     requires_action: bool = False
 
+
 __all__ = [
+    # Enums
     "AcuityLevel", "PatientStatus", "ResourceType", "ResourceStatus",
     "ProtocolType", "Priority",
+    # Patient Models
     "PatientArrivalNotification", "PatientUpdate",
+    # Resource Models
     "ResourceRequest", "ResourceAllocation", "ResourceConflict",
+    # Team Models
     "TeamActivationRequest", "TeamStatus",
+    # Message Models
     "ProtocolActivation", "LabOrder", "LabResult",
     "MedicationOrder", "MedicationDelivery",
     "BedRequest", "BedAssignment",
