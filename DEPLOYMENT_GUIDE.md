@@ -30,7 +30,7 @@ Complete guide for deploying EDFlow AI to production environments.
 **Step 1: Clone Repository**
 
 ```bash
-git clone https://github.com/YugmPatel/AutoMediCoord.git
+git clone https://github.com/YugmPatel/EDFlowAI.git
 cd AutoMediCoord
 ```
 

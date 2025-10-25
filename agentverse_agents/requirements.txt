@@ -1,0 +1,5 @@
+# Agentverse Agent Requirements
+# Minimal dependencies for cloud deployment
+
+uagents>=1.0.0
+pydantic>=2.0.0

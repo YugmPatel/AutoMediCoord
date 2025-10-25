@@ -32,9 +32,13 @@ from .models import (
 )
 from .ai import ClaudeEngine
 from .utils import get_config, get_logger
+from .visualization.event_tracker import get_event_tracker, AgentEvent, EventType
+from .letta_integration import get_memory_agent
 
 logger = get_logger(__name__)
 config = get_config()
+event_tracker = get_event_tracker()
+memory_agent = get_memory_agent()
 
 
 # ============================================================================
@@ -64,6 +68,14 @@ class BaseEDFlowAgent:
         self._setup_chat_handlers()
         self.agent.include(self.chat_proto, publish_manifest=True)
         
+        # Track agent startup
+        event_tracker.track_event(AgentEvent(
+            timestamp=datetime.utcnow(),
+            event_type=EventType.AGENT_STARTED,
+            agent_name=name,
+            description=f"{name} agent initialized and ready"
+        ))
+        
         logger.info(f"{name} agent initialized")
     
     def _setup_chat_handlers(self):
@@ -85,13 +97,36 @@ class BaseEDFlowAgent:
         """Override this to handle messages"""
         logger.info(f"{self.name} received: {text}")
     
-    async def send_message(self, ctx: Context, recipient: str, text: str):
+    async def send_message(self, ctx: Context, recipient: str, text: str, message_type: str = "ChatMessage"):
         """Send a chat message"""
+        start_time = datetime.utcnow()
+        
         await ctx.send(recipient, ChatMessage(
-            timestamp=datetime.utcnow(),
+            timestamp=start_time,
             msg_id=uuid4(),
             content=[TextContent(type="text", text=text)]
         ))
+        
+        # Track message sent
+        recipient_name = self._get_agent_name_from_address(recipient)
+        event_tracker.track_event(AgentEvent(
+            timestamp=start_time,
+            event_type=EventType.MESSAGE_SENT,
+            agent_name=self.name,
+            from_agent=self.name,
+            to_agent=recipient_name,
+            message_type=message_type,
+            description=text[:100]  # Truncate long messages
+        ))
+    
+    def _get_agent_name_from_address(self, address: str) -> str:
+        """Extract agent name from address"""
+        # Try to match address to known agents
+        if hasattr(self, 'agents'):
+            for name, addr in self.agents.items():
+                if addr == address:
+                    return name
+        return "unknown"
     
     def run(self):
         self.agent.run()
@@ -102,11 +137,12 @@ class BaseEDFlowAgent:
 # ============================================================================
 
 class EDCoordinatorAgent(BaseEDFlowAgent):
-    """Central orchestrator for ED operations"""
+    """Central orchestrator for ED operations with Letta memory integration"""
     
     def __init__(self):
         super().__init__("ed_coordinator", config.ED_COORDINATOR_SEED, config.ED_COORDINATOR_PORT)
         self.ai_engine = ClaudeEngine()
+        self.memory_agent = memory_agent
         self.active_patients = {}
         self.agents = {}
         
@@ -121,9 +157,51 @@ class EDCoordinatorAgent(BaseEDFlowAgent):
     async def _process_arrival(self, ctx: Context, msg: PatientArrivalNotification):
         logger.info(f"Patient {msg.patient_id} arriving")
         
-        # AI analysis
+        # Track patient arrival
+        event_tracker.track_event(AgentEvent(
+            timestamp=datetime.utcnow(),
+            event_type=EventType.MESSAGE_RECEIVED,
+            agent_name=self.name,
+            description=f"Patient {msg.patient_id} arrived - {msg.chief_complaint[:50]}",
+            patient_id=msg.patient_id,
+            details={"priority": msg.priority, "vitals": msg.vitals}
+        ))
+        
+        # LETTA INTEGRATION: Retrieve patient history and context
+        patient_context = None
+        if self.memory_agent.is_available():
+            event_tracker.track_event(AgentEvent(
+                timestamp=datetime.utcnow(),
+                event_type=EventType.PROTOCOL_STEP,
+                agent_name=self.name,
+                description="📚 Querying Letta for patient history...",
+                patient_id=msg.patient_id
+            ))
+            
+            patient_context = await self.memory_agent.recall_patient_context(
+                msg.patient_id,
+                msg.chief_complaint
+            )
+            
+            event_tracker.track_event(AgentEvent(
+                timestamp=datetime.utcnow(),
+                event_type=EventType.PROTOCOL_STEP,
+                agent_name=self.name,
+                description=f"📚 Letta context retrieved: {patient_context[:80]}...",
+                patient_id=msg.patient_id
+            ))
+        
+        # AI analysis (now with context from Letta)
+        event_tracker.track_event(AgentEvent(
+            timestamp=datetime.utcnow(),
+            event_type=EventType.PROTOCOL_STEP,
+            agent_name=self.name,
+            description="Analyzing patient with Claude AI (enriched with Letta context)...",
+            patient_id=msg.patient_id
+        ))
+        
         analysis = await self.ai_engine.analyze_patient_acuity(
-            msg.vitals, msg.chief_complaint
+            msg.vitals, msg.chief_complaint, context=patient_context
         )
         
         self.active_patients[msg.patient_id] = {
@@ -132,16 +210,83 @@ class EDCoordinatorAgent(BaseEDFlowAgent):
             "status": "triaged"
         }
         
+        # Track analysis complete
+        event_tracker.track_event(AgentEvent(
+            timestamp=datetime.utcnow(),
+            event_type=EventType.PROTOCOL_STEP,
+            agent_name=self.name,
+            description=f"AI Analysis complete: {analysis.get('protocol', 'general').upper()} protocol recommended",
+            patient_id=msg.patient_id,
+            details=analysis
+        ))
+        
         # Activate protocol if needed
-        if analysis.get("protocol") in ["stemi", "stroke", "trauma", "pediatric"]:
-            await self._activate_protocol(ctx, msg.patient_id, analysis.get("protocol"))
+        protocol = analysis.get("protocol")
+        if protocol in ["stemi", "stroke", "trauma", "pediatric"]:
+            # LETTA INTEGRATION: Get protocol insights before activation
+            if self.memory_agent.is_available():
+                protocol_insights = await self.memory_agent.get_protocol_insights(protocol)
+                event_tracker.track_event(AgentEvent(
+                    timestamp=datetime.utcnow(),
+                    event_type=EventType.PROTOCOL_STEP,
+                    agent_name=self.name,
+                    description=f"📚 Letta protocol insights: {protocol_insights[:80]}...",
+                    patient_id=msg.patient_id,
+                    protocol=protocol
+                ))
+            
+            await self._activate_protocol(ctx, msg.patient_id, protocol)
+            
+            # LETTA INTEGRATION: Store case in memory for future learning
+            if self.memory_agent.is_available():
+                await self.memory_agent.remember_patient_case(
+                    patient_id=msg.patient_id,
+                    protocol=protocol,
+                    vitals=msg.vitals,
+                    outcome={
+                        "protocol_activated": protocol,
+                        "activation_time": datetime.utcnow().isoformat(),
+                        "acuity_level": analysis.get("acuity_level"),
+                        "confidence": analysis.get("confidence")
+                    }
+                )
+                
+                event_tracker.track_event(AgentEvent(
+                    timestamp=datetime.utcnow(),
+                    event_type=EventType.PROTOCOL_STEP,
+                    agent_name=self.name,
+                    description="💾 Case stored in Letta memory for future learning",
+                    patient_id=msg.patient_id,
+                    protocol=protocol
+                ))
     
     async def _activate_protocol(self, ctx: Context, patient_id: str, protocol: str):
         logger.info(f"Activating {protocol.upper()} protocol for {patient_id}")
-        for agent_addr in self.agents.values():
+        
+        # Track protocol activation
+        event_tracker.track_event(AgentEvent(
+            timestamp=datetime.utcnow(),
+            event_type=EventType.PROTOCOL_ACTIVATED,
+            agent_name=self.name,
+            description=f"Activating emergency protocol for patient {patient_id}",
+            patient_id=patient_id,
+            protocol=protocol
+        ))
+        
+        # Notify all agents
+        for agent_name, agent_addr in self.agents.items():
             if agent_addr:
-                await self.send_message(ctx, agent_addr, 
-                    f"PROTOCOL: {protocol.upper()} - Patient {patient_id}")
+                event_tracker.track_event(AgentEvent(
+                    timestamp=datetime.utcnow(),
+                    event_type=EventType.PROTOCOL_STEP,
+                    agent_name=self.name,
+                    description=f"Notifying {agent_name}",
+                    patient_id=patient_id,
+                    protocol=protocol
+                ))
+                await self.send_message(ctx, agent_addr,
+                    f"PROTOCOL: {protocol.upper()} - Patient {patient_id}",
+                    message_type="ProtocolActivation")
 
 
 # ============================================================================

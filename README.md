@@ -17,6 +17,7 @@
 EDFlow AI is a complete emergency department optimization system featuring:
 
 - **6 Autonomous uAgents** (Fetch.ai framework)
+- **Letta Memory Integration** for persistent learning & context
 - **Real-time React Dashboard** (TypeScript + Tailwind CSS)
 - **FastAPI Backend** with WebSocket support
 - **Claude AI Integration** for patient analysis
@@ -25,41 +26,61 @@ EDFlow AI is a complete emergency department optimization system featuring:
 ### 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    EDFLOW AI SYSTEM                         │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         React Dashboard (Frontend)                   │  │
-│  │  • Real-time Patient Monitoring                     │  │
-│  │  • Live Cases Grid                                  │  │
-│  │  │  • Chat Interface                                │  │
-│  │  • Activity Log                                     │  │
-│  │  • Simulation Controls                              │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                           ↕ WebSocket                       │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         FastAPI + Socket.IO (API Layer)             │  │
-│  │  • REST Endpoints                                   │  │
-│  │  • Real-time WebSocket Events                       │  │
-│  │  • CORS Configuration                               │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                           ↕                                 │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │           uAgent Layer (Fetch.ai)                    │  │
-│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐       │  │
-│  │  │ED Coord│ │Resource│ │Special.│ │Lab Svc │       │  │
-│  │  └────────┘ └────────┘ └────────┘ └────────┘       │  │
-│  │  ┌────────┐ ┌────────┐                              │  │
-│  │  │Pharmacy│ │Bed Mgmt│                              │  │
-│  │  └────────┘ └────────┘                              │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                           ↕                                 │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         Claude AI Engine                             │  │
-│  │  Patient Analysis • Protocol Detection              │  │
-│  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                       EDFLOW AI SYSTEM                           │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │         React Dashboard (Frontend)                        │  │
+│  │  • Real-time Patient Monitoring                          │  │
+│  │  • Live Cases Grid                                       │  │
+│  │  • Chat Interface                                        │  │
+│  │  • Activity Log                                          │  │
+│  │  • Simulation Controls                                   │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                           ↕ WebSocket                            │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │         FastAPI + Socket.IO (API Layer)                  │  │
+│  │  • REST Endpoints                                        │  │
+│  │  • Real-time WebSocket Events                            │  │
+│  │  • CORS Configuration                                    │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                           ↕                                      │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │           uAgent Layer (Fetch.ai)                        │  │
+│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐           │  │
+│  │  │ED Coord│ │Resource│ │Special.│ │Lab Svc │           │  │
+│  │  └───┬────┘ └───┬────┘ └───┬────┘ └───┬────┘           │  │
+│  │  ┌───┴────┐ ┌───┴────┐      │          │                │  │
+│  │  │Pharmacy│ │Bed Mgmt│      │          │                │  │
+│  │  └────────┘ └────────┘      │          │                │  │
+│  └──────────────────────────────┼──────────┼────────────────┘  │
+│                      ↕           ↕          ↕                    │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │      🧠 Letta Memory Layer (Persistent Intelligence)      │  │
+│  │  ┌─────────────────────────────────────────────────────┐ │  │
+│  │  │ • Patient History & Context Recall                  │ │  │
+│  │  │ • Protocol Performance Learning                     │ │  │
+│  │  │ • Resource Allocation Patterns                      │ │  │
+│  │  │ • Team Performance Analytics                        │ │  │
+│  │  └─────────────────────────────────────────────────────┘ │  │
+│  │          ↓ Provides Context ↓                             │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                           ↕                                      │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │         Claude AI Engine                                  │  │
+│  │  • Patient Analysis (with Letta context)                 │  │
+│  │  • Protocol Detection                                    │  │
+│  │  • Context-Aware Recommendations                         │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
+
+Key Data Flows:
+━━━━━━━━━━━━━━
+• Agents → Letta: Store patient cases, protocol outcomes
+• Letta → Agents: Recall patient history, protocol insights
+• Letta → Claude: Provide historical context for analysis
+• Claude → Agents: Enhanced patient assessments with context
 ```
 
 ---
@@ -71,6 +92,7 @@ EDFlow AI is a complete emergency department optimization system featuring:
 - **Python 3.10+** with pip
 - **Node.js 18+** with npm
 - **Anthropic API Key** ([Get here](https://console.anthropic.com))
+- **Letta API Key** (Optional - [Get here](https://cloud.letta.com)) for persistent memory
 
 ### 1. Clone Repository
 
@@ -178,6 +200,173 @@ npm run dev
 
 ---
 
+## 🧠 Letta Memory Integration
+
+### Persistent Intelligence Layer
+
+Letta provides **long-term memory and learning capabilities** to the EDFlow AI system, enabling agents to learn from past cases and improve over time.
+
+#### Key Capabilities
+
+1. **Patient History Recall**
+   - Remembers previous visits and outcomes
+   - Tracks known allergies and medical conditions
+   - Recalls past protocol activations and their effectiveness
+   - Provides historical context when patients return
+
+2. **Protocol Performance Learning**
+   - Stores door-to-balloon times for STEMI cases
+   - Tracks door-to-needle times for stroke cases
+   - Analyzes resource utilization patterns
+   - Identifies successful patterns and bottlenecks
+
+3. **Resource Optimization**
+   - Learns optimal resource allocation patterns
+   - Recommends resources based on historical effectiveness
+   - Tracks team coordination efficiency
+   - Suggests improvements based on past performance
+
+4. **Context-Aware Analysis**
+   - Enhances Claude AI with historical context
+   - Provides insights from similar past cases
+   - Flags potential issues based on historical data
+   - Recommends process improvements
+
+#### Integration Points
+
+```python
+# Example: Patient arrives with chest pain
+# 1. Letta recalls patient history
+context = await memory_agent.recall_patient_context(patient_id, "chest pain")
+
+# 2. Claude AI analyzes WITH historical context
+analysis = await claude_engine.analyze_patient_acuity(
+    vitals=vitals,
+    symptoms="chest pain",
+    context=context  # ← Letta provides this
+)
+
+# 3. After case completion, Letta remembers outcome
+await memory_agent.remember_patient_case(
+    patient_id=patient_id,
+    protocol="stemi",
+    vitals=vitals,
+    outcome=case_outcome
+)
+```
+
+#### Configuration
+
+Enable Letta in your [`.env`](.env.example:1) file:
+
+```env
+LETTA_ENABLED=true
+LETTA_API_KEY=your_letta_api_key_here
+```
+
+**Note:** Letta is optional. The system includes a fallback in-memory store if Letta is not configured.
+
+#### How to Run with Letta and Verify Workflow
+
+**Step 1: Get Your Letta API Key**
+
+1. Visit [https://cloud.letta.com](https://cloud.letta.com)
+2. Sign up for a free account
+3. Navigate to Settings → API Keys
+4. Copy your API key (format: `sk-let-...`)
+
+**Step 2: Configure Your Environment**
+
+Update your [`.env`](.env:1) file:
+
+```env
+# Enable Letta
+LETTA_ENABLED=true
+LETTA_API_KEY=sk-let-OGRlNDQxNTktN2Q1ZS00OTc1LThjODQtNDMxMzM3M2ZlNDQ1...
+
+# Your Anthropic key
+ANTHROPIC_API_KEY=sk-ant-api03-...
+```
+
+**Step 3: Install Letta Package**
+
+```bash
+pip install letta
+```
+
+**Step 4: Run the System**
+
+```bash
+# Terminal 1: Start API server
+python run_api.py
+
+# Terminal 2: Start frontend
+cd frontend && npm run dev
+```
+
+**Step 5: Test Letta Integration**
+
+1. **Trigger a Patient Case**
+   - Open dashboard at http://localhost:3000
+   - Click "Simulate STEMI" button
+   - Watch the system process the case
+
+2. **Check Logs for Letta Activity**
+   - In Terminal 1, look for messages like:
+     ```
+     INFO: Letta client created successfully
+     INFO: Letta agent initialized: agent_...
+     INFO: Retrieved patient context for PATIENT_...
+     INFO: Stored patient case in Letta memory: PATIENT_...
+     ```
+
+3. **Verify on Letta Website**
+   - Visit [https://cloud.letta.com](https://cloud.letta.com)
+   - Click on "Agents" in the sidebar
+   - You should see an agent named **"EDFlowAI_memory"**
+   - Click on it to view the conversation history
+   - You'll see all patient cases, protocol outcomes, and context stored
+
+4. **Test Memory Recall**
+   - Simulate another case with the same patient
+   - The system will recall the patient's history from Letta
+   - Check logs for: `Retrieved patient context for PATIENT_...`
+
+**Step 6: View Letta's Memory Dashboard**
+
+Visit the Letta web interface to see:
+- **Agent Details**: View the EDFlowAI_memory agent
+- **Message History**: See all stored patient interactions
+- **Memory Blocks**: View core memory, archival memory
+- **Recall Memory**: See how Letta retrieves relevant context
+
+**Troubleshooting**
+
+If Letta fails to initialize:
+- Check your API key is correct in `.env`
+- Verify internet connection
+- Check logs for specific error messages
+- The system will automatically fall back to in-memory storage
+
+**What Letta Remembers**
+
+For each patient case, Letta stores:
+- Patient ID and visit timestamp
+- Protocol activated (STEMI, Stroke, etc.)
+- Vital signs at arrival
+- Case outcome and response times
+- Any complications or notable events
+
+This data is then used to:
+- Provide context when the same patient returns
+- Compare performance across similar cases
+- Recommend optimal resource allocation
+- Identify patterns and suggest improvements
+
+📖 **For detailed testing instructions, see:** [`LETTA_TESTING_GUIDE.md`](LETTA_TESTING_GUIDE.md:1)
+
+---
+
 ## 🔌 API Endpoints
 
 ### Dashboard
@@ -242,7 +431,8 @@ npm run dev
 
 ### AI & Reasoning
 
-- **Anthropic Claude AI** (patient analysis)
+- **Anthropic Claude AI** (patient analysis & protocol detection)
+- **Letta** (persistent memory & learning across sessions)
 - **LangGraph** (workflow orchestration)
 
 ---
@@ -257,6 +447,7 @@ AutoMediCoord/
 │   │   ├── agents.py       # 6 specialized agents
 │   │   ├── models.py       # Data models
 │   │   ├── ai.py          # Claude AI engine
+│   │   ├── letta_integration.py  # Letta memory layer
 │   │   └── utils.py       # Configuration
 │   └── requirements.txt    # Python dependencies
 ├── api/                    # FastAPI wrapper
@@ -330,7 +521,11 @@ API_HOST=0.0.0.0
 
 # Agent Configuration
 DEPLOYMENT_MODE=local
-ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_API_KEY=your_anthropic_key_here
+
+# Letta Memory Integration (Optional)
+LETTA_ENABLED=true
+LETTA_API_KEY=your_letta_key_here
 
 # Agent Seeds (for consistent addresses)
 ED_COORDINATOR_SEED=ed_coordinator_seed_001

@@ -1,5 +1,5 @@
 """
-AutoMediCoord Agents - Agentverse Deployment via Render
+EDFlow AI Agents - Agentverse Deployment via Render
 All 6 agents running with mailbox enabled for Agentverse integration
 """
 
@@ -17,10 +17,10 @@ logger = get_logger(__name__)
 config = get_config()
 
 def main():
-    """Deploy all 6 AutoMediCoord agents to Agentverse via Render"""
+    """Deploy all 6 EDFlow AI agents to Agentverse via Render"""
     
     logger.info("=" * 70)
-    logger.info("AutoMediCoord - Agentverse Deployment")
+    logger.info("EDFlow AI - Agentverse Deployment")
     logger.info("=" * 70)
     
     # Verify Agentverse mode
@@ -85,7 +85,7 @@ def main():
         logger.info("  3. Update agent profiles in Agentverse dashboard")
         logger.info("  4. Test agent communication via Agentverse chat")
         logger.info("")
-        logger.info("🎯 AutoMediCoord Multi-Agent System Ready!")
+        logger.info("🎯 EDFlow AI Multi-Agent System Ready!")
         logger.info("=" * 70)
         
         # Run bureau (this will block)

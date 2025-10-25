@@ -21,6 +21,10 @@ class Config:
     # API Keys
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
     AGENTVERSE_API_KEY: str = os.getenv("AGENTVERSE_API_KEY", "")
+    LETTA_API_KEY: str = os.getenv("LETTA_API_KEY", "")
+    
+    # Letta Configuration
+    LETTA_ENABLED: bool = os.getenv("LETTA_ENABLED", "true").lower() == "true"
     
     # Agent Seeds
     ED_COORDINATOR_SEED: str = os.getenv("ED_COORDINATOR_SEED", "ed_coordinator_seed")
