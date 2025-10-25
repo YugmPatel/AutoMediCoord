@@ -1,0 +1,26 @@
+services:
+  - type: worker
+    name: automedicoord-agents
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: DEPLOYMENT_MODE
+        value: agentverse
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ED_COORDINATOR_SEED
+        generateValue: true
+      - key: RESOURCE_MANAGER_SEED
+        generateValue: true
+      - key: SPECIALIST_COORDINATOR_SEED
+        generateValue: true
+      - key: LAB_SERVICE_SEED
+        generateValue: true
+      - key: PHARMACY_SEED
+        generateValue: true
+      - key: BED_MANAGEMENT_SEED
+        generateValue: true
+      - key: LOG_LEVEL
+        value: INFO
