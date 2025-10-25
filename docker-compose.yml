@@ -16,7 +16,7 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     volumes:
-      - ./AutoMediCoord:/app/AutoMediCoord
+      - ./EDFlow AI:/app/EDFlow AI
       - ./api:/app/api
       - ./logs:/app/logs
     restart: unless-stopped

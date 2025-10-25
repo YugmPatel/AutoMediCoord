@@ -54,7 +54,7 @@ class TerminalLogger:
         msg_rate = self.event_tracker.get_message_rate()
         
         header_text = Text()
-        header_text.append("🏥 AutoMediCoord ", style="bold cyan")
+        header_text.append("🏥 EDFlow AI ", style="bold cyan")
         header_text.append("Multi-Agent Emergency Department System", style="bold white")
         header_text.append(f" | Uptime: {uptime}s", style="dim")
         header_text.append(f" | Msg Rate: {msg_rate:.1f}/s", style="dim")

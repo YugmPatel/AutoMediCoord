@@ -1,10 +1,10 @@
 """
-AutoMediCoord - Autonomous Medical Coordinator
+EDFlow AI - Autonomous Medical Coordinator
 Emergency Department Flow Optimizer
 """
 
 __version__ = "1.0.0"
-__author__ = "AutoMediCoord Team"
+__author__ = "EDFlow AI Team"
 
 # Make modules available at package level
 from . import models

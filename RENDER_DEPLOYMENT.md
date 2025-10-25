@@ -1,6 +1,6 @@
-# AutoMediCoord Agent Deployment Guide - Render & Agentverse
+# EDFlow AI Agent Deployment Guide - Render & Agentverse
 
-This guide walks you through deploying all 6 AutoMediCoord agents to Agentverse via Render cloud platform.
+This guide walks you through deploying all 6 EDFlow AI agents to Agentverse via Render cloud platform.
 
 ## 📋 Prerequisites
 
@@ -11,10 +11,10 @@ This guide walks you through deploying all 6 AutoMediCoord agents to Agentverse 
 
 ## 🗂️ Project Structure
 
-Your AutoMediCoord project is already structured correctly:
+Your EDFlow AI project is already structured correctly:
 
 ```
-AutoMediCoord/
+EDFlow AI/
 ├── app.py                    # Main entry point for Render
 ├── render.yaml               # Render auto-deploy configuration
 ├── requirements.txt          # Python dependencies
@@ -76,7 +76,7 @@ The [`render.yaml`](render.yaml:1) file is already configured for automatic depl
 2. **Connect Repository:**
    - Click **"New" → "Blueprint"**
    - Connect your GitHub account
-   - Select your **AutoMediCoord** repository
+   - Select your **EDFlow AI** repository
    - Render will automatically detect `render.yaml`
 
 3. **Add ANTHROPIC_API_KEY:**
@@ -300,4 +300,4 @@ When setting up agents in Agentverse, use these tags:
 
 ---
 
-**🎯 Your AutoMediCoord Multi-Agent System is ready for deployment!**
+**🎯 Your EDFlow AI Multi-Agent System is ready for deployment!**

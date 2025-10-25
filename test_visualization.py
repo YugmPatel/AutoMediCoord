@@ -17,7 +17,7 @@ def test_terminal_logger():
     logger = TerminalLogger(event_tracker=tracker)
     
     # Test banner
-    logger.print_banner("🏥 AutoMediCoord Test", "cyan")
+    logger.print_banner("🏥 EDFlow AI Test", "cyan")
     
     # Test section
     logger.print_section(

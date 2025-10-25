@@ -2,14 +2,14 @@
 
 ## Overview
 
-This document outlines how to integrate the React frontend with the existing AutoMediCoord uAgents backend system.
+This document outlines how to integrate the React frontend with the existing EDFlow AI uAgents backend system.
 
 ## Integration Architecture
 
 ### Current Backend Structure
 
 ```
-AutoMediCoord/
+EDFlow AI/
 ├── app.py                 # Main uAgents application
 ├── src/
 │   ├── agents.py         # 6 specialized agents
@@ -21,7 +21,7 @@ AutoMediCoord/
 ### New Integration Layer
 
 ```
-AutoMediCoord/
+EDFlow AI/
 ├── api/                  # New FastAPI wrapper
 │   ├── __init__.py
 │   ├── main.py          # FastAPI application
@@ -461,14 +461,14 @@ version: "3.8"
 
 services:
   backend:
-    build: ./AutoMediCoord
+    build: ./EDFlow AI
     ports:
       - "8080:8080"
     environment:
       - DEPLOYMENT_MODE=local
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
-      - ./AutoMediCoord:/app
+      - ./EDFlow AI:/app
     command: python api/main.py
 
   frontend:
@@ -486,7 +486,7 @@ services:
 
 ## Integration Steps
 
-1. **Create API Layer**: Add FastAPI wrapper to AutoMediCoord
+1. **Create API Layer**: Add FastAPI wrapper to EDFlow AI
 2. **Setup WebSocket**: Implement Socket.IO server for real-time events
 3. **Agent Integration**: Connect existing agents to WebSocket events
 4. **Frontend Services**: Implement API and Socket services in React

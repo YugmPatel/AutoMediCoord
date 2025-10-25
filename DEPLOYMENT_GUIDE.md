@@ -31,7 +31,7 @@ Complete guide for deploying EDFlow AI to production environments.
 
 ```bash
 git clone https://github.com/YugmPatel/EDFlowAI.git
-cd AutoMediCoord
+cd EDFlowAI
 ```
 
 **Step 2: Configure Environment**
@@ -76,7 +76,7 @@ python test_system.py
 
 ```bash
 # Install Python dependencies
-pip install -r AutoMediCoord/requirements.txt
+pip install -r EDFlowAI/requirements.txt
 pip install -r api_requirements.txt
 
 # Set environment variables

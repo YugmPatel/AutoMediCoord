@@ -1,5 +1,5 @@
 """
-Enhanced visualization system for AutoMediCoord agent communication
+Enhanced visualization system for EDFlow AI agent communication
 """
 
 from .event_tracker import EventTracker, AgentEvent

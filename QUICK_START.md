@@ -26,7 +26,7 @@ uvicorn api.main:socket_app --host 0.0.0.0 --port 8080 --reload
 python -m uvicorn api.main:socket_app --host 0.0.0.0 --port 8080
 
 # Method 3: Set PYTHONPATH and run
-set PYTHONPATH=.;.\AutoMediCoord
+set PYTHONPATH=.;.\EDFlow AI
 python run_api.py
 ```
 
@@ -76,10 +76,10 @@ pip list | grep uvicorn
 pip list | grep socketio
 ```
 
-**Option C: Run from AutoMediCoord Directory**
+**Option C: Run from EDFlow AI Directory**
 
 ```bash
-cd AutoMediCoord
+cd EDFlow AI
 python app.py  # Run your original uAgents app
 ```
 
@@ -112,4 +112,4 @@ Once both are running:
 4. Send chat message and see agent response
 5. Monitor activity log for updates
 
-The system is designed to work with your existing AutoMediCoord uAgents while providing the modern dashboard interface you requested!
+The system is designed to work with your existing EDFlow AI uAgents while providing the modern dashboard interface you requested!

@@ -1,6 +1,6 @@
 """
 Letta Integration Module
-Provides persistent memory and learning capabilities for AutoMediCoord agents
+Provides persistent memory and learning capabilities for EDFlow AI agents
 """
 
 from datetime import datetime
