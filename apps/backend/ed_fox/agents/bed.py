@@ -1,0 +1,1 @@
+"""Bed management agent (template)."""

@@ -1,0 +1,1 @@
+"""Stub Vapi client for inbound/outbound voice. No-op for now."""

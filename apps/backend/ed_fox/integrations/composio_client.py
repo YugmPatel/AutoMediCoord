@@ -1,0 +1,1 @@
+"""Stub Composio client for Slack/PagerDuty actions. No-op for now."""

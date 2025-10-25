@@ -1,0 +1,1 @@
+"""Stub planner that will call Claude later. Keep as no-op for now."""
