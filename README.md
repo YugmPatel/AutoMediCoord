@@ -86,8 +86,8 @@ EDFlow AI deploys 6+ specialized autonomous agents that:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/ED-FOx.git
-cd ED-FOx
+git clone https://github.com/yourusername/AutoMediCoord.git
+cd AutoMediCoord
 ```
 
 2. **Create virtual environment**
@@ -455,7 +455,7 @@ pytest --cov=src tests/
 ## 📂 Project Structure
 
 ```
-ED-FOx/
+AutoMediCoord/
 ├── src/
 │   ├── agents/              # 6+ uAgent implementations
 │   ├── langgraph/           # Workflow orchestration

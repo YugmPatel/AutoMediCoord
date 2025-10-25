@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: ed-fox-agents
+    name: automedicoord-agents
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
