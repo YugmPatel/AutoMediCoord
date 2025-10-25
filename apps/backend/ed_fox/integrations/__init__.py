@@ -1,1 +1,0 @@
-"""Optional sponsor integrations (env-guarded)."""
