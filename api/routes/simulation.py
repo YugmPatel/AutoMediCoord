@@ -72,7 +72,7 @@ async def simulate_stemi(background_tasks: BackgroundTasks):
         ed_coordinator.active_patients[patient_id] = {
             "acuity": "1",
             "protocol": "stemi",
-            "status": "triaged",
+            "status": "Triaged",
             "arrival_time": datetime.utcnow(),
             "vitals": patient_data.vitals,
             "chief_complaint": patient_data.chief_complaint,
@@ -88,7 +88,7 @@ async def simulate_stemi(background_tasks: BackgroundTasks):
                 "patient_id": patient_id,
                 "type": "STEMI",
                 "vitals": patient_data.vitals,
-                "status": "triaged",
+                "status": "Triaged",
                 "protocol": "stemi"
             }
         )
@@ -166,7 +166,7 @@ async def simulate_stroke(background_tasks: BackgroundTasks):
         ed_coordinator.active_patients[patient_id] = {
             "acuity": "1",
             "protocol": "stroke",
-            "status": "triaged",
+            "status": "Triaged",
             "arrival_time": datetime.utcnow(),
             "vitals": patient_data.vitals,
             "chief_complaint": patient_data.chief_complaint,
@@ -182,7 +182,7 @@ async def simulate_stroke(background_tasks: BackgroundTasks):
                 "patient_id": patient_id,
                 "type": "Stroke",
                 "vitals": patient_data.vitals,
-                "status": "triaged",
+                "status": "Triaged",
                 "protocol": "stroke"
             }
         )
@@ -260,7 +260,7 @@ async def simulate_trauma(background_tasks: BackgroundTasks):
         ed_coordinator.active_patients[patient_id] = {
             "acuity": "1",
             "protocol": "trauma",
-            "status": "triaged",
+            "status": "Triaged",
             "arrival_time": datetime.utcnow(),
             "vitals": patient_data.vitals,
             "chief_complaint": patient_data.chief_complaint,
@@ -276,7 +276,7 @@ async def simulate_trauma(background_tasks: BackgroundTasks):
                 "patient_id": patient_id,
                 "type": "Trauma",
                 "vitals": patient_data.vitals,
-                "status": "triaged",
+                "status": "Triaged",
                 "protocol": "trauma"
             }
         )
@@ -355,7 +355,7 @@ async def simulate_custom_case(
         ed_coordinator.active_patients[patient_id] = {
             "acuity": str(patient_notification.priority),
             "protocol": request.case_type.lower(),
-            "status": "triaged",
+            "status": "Triaged",
             "arrival_time": datetime.utcnow(),
             "vitals": patient_notification.vitals,
             "chief_complaint": patient_notification.chief_complaint,
@@ -371,7 +371,7 @@ async def simulate_custom_case(
                 "patient_id": patient_id,
                 "type": request.case_type,
                 "vitals": patient_notification.vitals,
-                "status": "triaged",
+                "status": "Triaged",
                 "protocol": request.case_type.lower()
             }
         )

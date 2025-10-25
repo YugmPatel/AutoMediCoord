@@ -54,7 +54,7 @@ const Layout: React.FC = () => {
       // Update metrics timestamp
       setLocalMetrics((prev) => ({
         ...prev,
-        lastUpdated: new Date(),
+        last_updated: new Date(),
       }));
 
       // Simulate occasional new activities if no real-time data
@@ -96,8 +96,8 @@ const Layout: React.FC = () => {
         setLocalCases((prev) => [newPatient, ...prev]);
         setLocalMetrics((prev) => ({
           ...prev,
-          activeCases: prev.activeCases + 1,
-          lastUpdated: new Date(),
+          active_cases: prev.active_cases + 1,
+          last_updated: new Date(),
         }));
       }
     } catch (error) {
@@ -108,7 +108,7 @@ const Layout: React.FC = () => {
       setLocalCases((prev) => [newPatient, ...prev]);
       setLocalMetrics((prev) => ({
         ...prev,
-        activeCases: prev.activeCases + 1,
+        active_cases: prev.active_cases + 1,
         lastUpdated: new Date(),
       }));
     }
@@ -126,8 +126,8 @@ const Layout: React.FC = () => {
         setLocalCases((prev) => [newPatient, ...prev]);
         setLocalMetrics((prev) => ({
           ...prev,
-          activeCases: prev.activeCases + 1,
-          lastUpdated: new Date(),
+          active_cases: prev.active_cases + 1,
+          last_updated: new Date(),
         }));
       }
     } catch (error) {
@@ -138,8 +138,8 @@ const Layout: React.FC = () => {
       setLocalCases((prev) => [newPatient, ...prev]);
       setLocalMetrics((prev) => ({
         ...prev,
-        activeCases: prev.activeCases + 1,
-        lastUpdated: new Date(),
+        active_cases: prev.active_cases + 1,
+        last_updated: new Date(),
       }));
     }
   };

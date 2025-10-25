@@ -136,14 +136,47 @@ export const useRealTimeDashboard = () => {
   const [activities, setActivities] = useState<ActivityEntry[]>([]);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
+  // Function to fetch fresh data from API
+  const fetchDashboardData = async () => {
+    try {
+      console.log("🔄 Fetching fresh dashboard data...");
+      
+      // Import API service
+      const { api } = await import("../services/api");
+      
+      // Fetch metrics
+      const metricsResponse = await api.getDashboardMetrics();
+      if (metricsResponse) {
+        setMetrics(metricsResponse);
+        console.log("📊 Metrics updated:", metricsResponse);
+      }
+      
+      // Fetch cases
+      const casesResponse = await api.getActiveCases();
+      if (casesResponse) {
+        setCases(casesResponse);
+        console.log("📋 Cases updated:", casesResponse.length, "cases");
+      }
+      
+      // Fetch activities
+      const activitiesResponse = await api.getRecentActivity();
+      if (activitiesResponse) {
+        setActivities(activitiesResponse);
+        console.log("📝 Activities updated:", activitiesResponse.length, "activities");
+      }
+      
+      setLastUpdate(new Date());
+      
+    } catch (error) {
+      console.error("❌ Error fetching dashboard data:", error);
+    }
+  };
+
   const handlers: SocketEventHandlers = {
     onPatientArrival: (data) => {
       console.log("📥 New patient arrival:", data);
-      // Add new case to the list
-      if (data.case) {
-        setCases((prev) => [data.case, ...prev]);
-        setLastUpdate(new Date());
-      }
+      // Trigger fresh data fetch
+      fetchDashboardData();
     },
 
     onProtocolActivation: (data) => {
@@ -163,26 +196,20 @@ export const useRealTimeDashboard = () => {
 
     onCaseUpdate: (data) => {
       console.log("📋 Case updated:", data);
-      // Update specific case
-      setCases((prev) =>
-        prev.map((c) =>
-          c.id === data.caseId
-            ? { ...c, ...data.updates, timestamp: new Date() }
-            : c
-        )
-      );
-      setLastUpdate(new Date());
+      // Trigger fresh data fetch for case updates
+      fetchDashboardData();
     },
 
     onDashboardUpdate: (data) => {
       console.log("📊 Dashboard updated:", data);
-      if (data.metrics) {
-        setMetrics({
-          ...data.metrics,
-          lastUpdated: new Date(data.metrics.lastUpdated),
-        });
-      }
-      setLastUpdate(new Date());
+      // Trigger fresh data fetch
+      fetchDashboardData();
+    },
+
+    onDashboardRefresh: (data) => {
+      console.log("🔄 Dashboard refresh requested:", data);
+      // Immediately fetch fresh data from API
+      fetchDashboardData();
     },
 
     onAgentActivity: (data) => {
@@ -203,6 +230,11 @@ export const useRealTimeDashboard = () => {
 
   const { isConnected, sendMessage, lastError } = useSocket(handlers);
 
+  // Initial data fetch on mount
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   return {
     metrics,
     cases,
@@ -214,6 +246,7 @@ export const useRealTimeDashboard = () => {
     setMetrics,
     setCases,
     setActivities,
+    refreshData: fetchDashboardData,
   };
 };
 

@@ -70,11 +70,11 @@ export const mockPatientCases: PatientCase[] = [
 ];
 
 export const mockDashboardMetrics: DashboardMetrics = {
-  activeCases: 3,
-  avgLabETA: 9, // minutes
-  icuBedsHeld: 2,
-  doctorsPaged: 2,
-  lastUpdated: new Date(),
+  active_cases: 3,
+  avg_lab_eta: 9, // minutes
+  icu_beds_held: 2,
+  doctors_paged: 2,
+  last_updated: new Date(),
 };
 
 export const mockActivityEntries: ActivityEntry[] = [

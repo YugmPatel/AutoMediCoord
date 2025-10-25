@@ -31,11 +31,11 @@ export interface PatientCase {
 }
 
 export interface DashboardMetrics {
-  activeCases: number;
-  avgLabETA: number; // minutes
-  icuBedsHeld: number;
-  doctorsPaged: number;
-  lastUpdated: Date;
+  active_cases: number;
+  avg_lab_eta: number; // minutes
+  icu_beds_held: number;
+  doctors_paged: number;
+  last_updated: Date;
 }
 
 export interface ActivityEntry {

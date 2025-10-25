@@ -24,6 +24,7 @@ export interface SocketEventHandlers {
   onAgentMessage?: (data: AgentMessageEvent["data"]) => void;
   onChatMessage?: (message: ChatMessage) => void;
   onDashboardUpdate?: (data: any) => void;
+  onDashboardRefresh?: (data: any) => void;
   onAgentActivity?: (data: any) => void;
   onConnectionStatus?: (connected: boolean) => void;
   onError?: (error: string) => void;
@@ -128,6 +129,11 @@ class SocketService {
     this.socket.on("dashboard_update", (data: any) => {
       console.log("📊 Dashboard update:", data);
       this.handlers.onDashboardUpdate?.(data.data);
+    });
+
+    this.socket.on("dashboard_refresh", (data: any) => {
+      console.log("🔄 Dashboard refresh:", data);
+      this.handlers.onDashboardRefresh?.(data);
     });
 
     this.socket.on("agent_activity", (data: any) => {

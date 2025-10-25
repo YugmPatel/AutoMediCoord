@@ -10,25 +10,25 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({ metrics }) => {
   const cards = [
     {
       title: "Active Cases",
-      value: metrics.activeCases,
+      value: metrics.active_cases,
       icon: <Users className="w-6 h-6" />,
       color: "text-blue-500",
     },
     {
       title: "Avg Lab ETA",
-      value: `${metrics.avgLabETA}m`,
+      value: `${metrics.avg_lab_eta}m`,
       icon: <Clock className="w-6 h-6" />,
       color: "text-green-500",
     },
     {
       title: "ICU Beds Held",
-      value: metrics.icuBedsHeld,
+      value: metrics.icu_beds_held,
       icon: <Bed className="w-6 h-6" />,
       color: "text-yellow-500",
     },
     {
       title: "Doctors Paged",
-      value: metrics.doctorsPaged,
+      value: metrics.doctors_paged,
       icon: <UserCheck className="w-6 h-6" />,
       color: "text-purple-500",
     },
