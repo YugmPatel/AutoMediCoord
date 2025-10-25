@@ -4,11 +4,9 @@ import MetricsCards from "../dashboard/MetricsCards";
 import LiveCases from "../dashboard/LiveCases";
 import ActivityLog from "../dashboard/ActivityLog";
 import ChatInterface from "../chat/ChatInterface";
-import {
-  mockData,
-  simulatePatientArrival,
-  addNewMockMessage,
-} from "../../services/mockData";
+import { useRealTimeDashboard, useRealTimeChat } from "../../hooks/useSocket";
+import { api } from "../../services/api";
+import { mockData, simulatePatientArrival } from "../../services/mockData";
 import {
   PatientCase,
   DashboardMetrics,
@@ -17,25 +15,50 @@ import {
 } from "../../services/types";
 
 const Layout: React.FC = () => {
-  const [metrics, setMetrics] = useState<DashboardMetrics>(mockData.metrics);
-  const [cases, setCases] = useState<PatientCase[]>(mockData.cases);
-  const [activities, setActivities] = useState<ActivityEntry[]>(
+  // Use real-time hooks for WebSocket communication
+  const {
+    metrics: realTimeMetrics,
+    cases: realTimeCases,
+    activities: realTimeActivities,
+    isConnected: dashboardConnected,
+    setMetrics,
+    setCases,
+    setActivities,
+  } = useRealTimeDashboard();
+
+  const {
+    messages,
+    sendMessage: sendChatMessage,
+    isConnected: chatConnected,
+  } = useRealTimeChat();
+
+  // Local state with fallbacks
+  const [localMetrics, setLocalMetrics] = useState<DashboardMetrics>(
+    mockData.metrics
+  );
+  const [localCases, setLocalCases] = useState<PatientCase[]>(mockData.cases);
+  const [localActivities, setLocalActivities] = useState<ActivityEntry[]>(
     mockData.activities
   );
-  const [messages, setMessages] = useState<ChatMessage[]>(mockData.messages);
-  const [isConnected, setIsConnected] = useState(true);
 
-  // Simulate real-time updates
+  // Use real-time data if available, otherwise use local/mock data
+  const metrics = realTimeMetrics || localMetrics;
+  const cases = realTimeCases.length > 0 ? realTimeCases : localCases;
+  const activities =
+    realTimeActivities.length > 0 ? realTimeActivities : localActivities;
+  const isConnected = dashboardConnected || chatConnected;
+
+  // Initialize with mock data and simulate updates
   useEffect(() => {
     const interval = setInterval(() => {
-      // Update metrics
-      setMetrics((prev) => ({
+      // Update metrics timestamp
+      setLocalMetrics((prev) => ({
         ...prev,
         lastUpdated: new Date(),
       }));
 
-      // Simulate occasional new activities
-      if (Math.random() < 0.3) {
+      // Simulate occasional new activities if no real-time data
+      if (realTimeActivities.length === 0 && Math.random() < 0.3) {
         const newActivity: ActivityEntry = {
           id: String(Date.now()),
           timestamp: new Date(),
@@ -53,86 +76,96 @@ const Layout: React.FC = () => {
           ] as ActivityEntry["status"],
         };
 
-        setActivities((prev) => [newActivity, ...prev].slice(0, 20));
+        setLocalActivities((prev) => [newActivity, ...prev].slice(0, 20));
       }
     }, 10000); // Update every 10 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [realTimeActivities.length]);
 
-  const handleSimulateSTEMI = () => {
-    const newPatient = simulatePatientArrival("STEMI");
-    setCases((prev) => [newPatient, ...prev]);
+  const handleSimulateSTEMI = async () => {
+    try {
+      console.log("Triggering STEMI simulation...");
+      const response = await api.simulateSTEMI();
+      console.log("STEMI simulation response:", response);
 
-    // Update metrics
-    setMetrics((prev) => ({
-      ...prev,
-      activeCases: prev.activeCases + 1,
-      lastUpdated: new Date(),
-    }));
+      // The real-time hooks will automatically update the UI via WebSocket
+      // If WebSocket is not connected, update local state as fallback
+      if (!isConnected) {
+        const newPatient = simulatePatientArrival("STEMI");
+        setLocalCases((prev) => [newPatient, ...prev]);
+        setLocalMetrics((prev) => ({
+          ...prev,
+          activeCases: prev.activeCases + 1,
+          lastUpdated: new Date(),
+        }));
+      }
+    } catch (error) {
+      console.error("Error triggering STEMI simulation:", error);
 
-    // Add system message
-    const systemMessage = addNewMockMessage(
-      `New STEMI patient arrived: ${newPatient.id}`,
-      "System"
-    );
-    setMessages((prev) => [...prev, systemMessage]);
-
-    // Add activity
-    const newActivity: ActivityEntry = {
-      id: String(Date.now()),
-      timestamp: new Date(),
-      type: "System",
-      message: `STEMI protocol activated for ${newPatient.id}`,
-      status: "In Progress",
-      caseId: newPatient.id,
-    };
-    setActivities((prev) => [newActivity, ...prev]);
+      // Fallback to local simulation
+      const newPatient = simulatePatientArrival("STEMI");
+      setLocalCases((prev) => [newPatient, ...prev]);
+      setLocalMetrics((prev) => ({
+        ...prev,
+        activeCases: prev.activeCases + 1,
+        lastUpdated: new Date(),
+      }));
+    }
   };
 
-  const handleSimulateStroke = () => {
-    const newPatient = simulatePatientArrival("Stroke");
-    setCases((prev) => [newPatient, ...prev]);
+  const handleSimulateStroke = async () => {
+    try {
+      console.log("Triggering Stroke simulation...");
+      const response = await api.simulateStroke();
+      console.log("Stroke simulation response:", response);
 
-    // Update metrics
-    setMetrics((prev) => ({
-      ...prev,
-      activeCases: prev.activeCases + 1,
-      lastUpdated: new Date(),
-    }));
+      // The real-time hooks will automatically update the UI via WebSocket
+      if (!isConnected) {
+        const newPatient = simulatePatientArrival("Stroke");
+        setLocalCases((prev) => [newPatient, ...prev]);
+        setLocalMetrics((prev) => ({
+          ...prev,
+          activeCases: prev.activeCases + 1,
+          lastUpdated: new Date(),
+        }));
+      }
+    } catch (error) {
+      console.error("Error triggering Stroke simulation:", error);
 
-    // Add system message
-    const systemMessage = addNewMockMessage(
-      `New Stroke patient arrived: ${newPatient.id}`,
-      "System"
-    );
-    setMessages((prev) => [...prev, systemMessage]);
-
-    // Add activity
-    const newActivity: ActivityEntry = {
-      id: String(Date.now()),
-      timestamp: new Date(),
-      type: "System",
-      message: `Stroke protocol activated for ${newPatient.id}`,
-      status: "In Progress",
-      caseId: newPatient.id,
-    };
-    setActivities((prev) => [newActivity, ...prev]);
+      // Fallback to local simulation
+      const newPatient = simulatePatientArrival("Stroke");
+      setLocalCases((prev) => [newPatient, ...prev]);
+      setLocalMetrics((prev) => ({
+        ...prev,
+        activeCases: prev.activeCases + 1,
+        lastUpdated: new Date(),
+      }));
+    }
   };
 
   const handleSendMessage = (message: string) => {
-    const userMessage = addNewMockMessage(message, "User");
-    setMessages((prev) => [...prev, userMessage]);
+    console.log("Sending message:", message);
 
-    // Simulate agent response after a delay
-    setTimeout(() => {
-      const agentResponse = addNewMockMessage(
-        "Message received. Processing request...",
-        "ED Coordinator",
-        "ed_coordinator"
-      );
-      setMessages((prev) => [...prev, agentResponse]);
-    }, 1000);
+    try {
+      // Use the real-time chat hook which handles WebSocket communication
+      sendChatMessage(message);
+    } catch (error) {
+      console.error("Error sending message via WebSocket:", error);
+
+      // Fallback: Add message locally and simulate response
+      const userMessage: ChatMessage = {
+        id: `user_${Date.now()}`,
+        content: message,
+        timestamp: new Date(),
+        sender: "User",
+        type: "user",
+      };
+
+      // Since we can't directly update the real-time chat messages,
+      // we'll log this for debugging
+      console.log("Message sent (fallback mode):", userMessage);
+    }
   };
 
   const handleCaseClick = (caseId: string) => {
@@ -166,7 +199,7 @@ const Layout: React.FC = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-8">
               <ChatInterface
-                messages={messages}
+                messages={messages.length > 0 ? messages : mockData.messages}
                 onSendMessage={handleSendMessage}
                 isConnected={isConnected}
                 className="h-[600px]"
