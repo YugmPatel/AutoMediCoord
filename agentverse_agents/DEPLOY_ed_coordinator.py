@@ -65,11 +65,11 @@ async def initialize(ctx: Context):
     ctx.storage.set("protocols_activated", 0)
     
     ctx.storage.set("agent_addresses", {
-        "resource_manager": "REPLACE_WITH_RESOURCE_MANAGER_ADDRESS",
-        "specialist_coordinator": "REPLACE_WITH_SPECIALIST_COORDINATOR_ADDRESS",
-        "lab_service": "REPLACE_WITH_LAB_SERVICE_ADDRESS",
-        "pharmacy": "REPLACE_WITH_PHARMACY_ADDRESS",
-        "bed_management": "REPLACE_WITH_BED_MANAGEMENT_ADDRESS"
+        "resource_manager": "agent1qff3y8ry6jew53lgc5gxzg8cqc3cc505c5n0rwcntpwe2ydvz23gxc36xh4",
+        "specialist_coordinator": "agent1qdentzr0unjc5t8sylsha2ugv5yecpf80jw67qwwu4glgc84rr9u6w98f0c",
+        "lab_service": "agent1qw4g3efd5t7ve83gmq3yp7dkzzmg7g4z480cunk8rru4yhw5x2k979ddxgk",
+        "pharmacy": "agent1qfx6rpglgl86s8072ja8y7fkk9pfg5csa2jg7h2vgkl2nztt2fctye7wngx",
+        "bed_management": "agent1qd6j2swdef06tgl4ly66r65c4vz6rcggt7rm89udnuvmn8n2y90myq46rfl"
     })
     
     ctx.logger.info(f"🏥 ED Coordinator Agent Started")
