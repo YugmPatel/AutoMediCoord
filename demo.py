@@ -48,13 +48,14 @@ def main():
     # Print initial banner
     terminal_logger.print_banner("🏥 EDFlow AI Multi-Agent System", "bold cyan")
     
-    terminal_logger.console.print("[bold]The 6 Autonomous Agents:[/bold]")
+    terminal_logger.console.print("[bold]The 7 Autonomous Agents:[/bold]")
     terminal_logger.console.print("  🏥 [cyan]ED Coordinator[/cyan] - Orchestrates all emergency department operations")
     terminal_logger.console.print("  📊 [green]Resource Manager[/green] - Allocates beds, equipment, and resources")
     terminal_logger.console.print("  👨‍⚕️ [yellow]Specialist Coordinator[/yellow] - Activates specialist teams (STEMI, Stroke, Trauma)")
     terminal_logger.console.print("  🧪 [magenta]Lab Service[/magenta] - Processes laboratory test orders")
     terminal_logger.console.print("  💊 [blue]Pharmacy[/blue] - Handles medication orders and delivery")
-    terminal_logger.console.print("  🛏️ [red]Bed Management[/red] - Assigns and manages patient beds\n")
+    terminal_logger.console.print("  🛏️ [red]Bed Management[/red] - Assigns and manages patient beds")
+    terminal_logger.console.print("  📱 [bright_green]WhatsApp Notification[/bright_green] - Sends emergency alerts to medical staff\n")
     
     terminal_logger.console.print("[bold yellow]🚀 Initializing agents (this takes a few seconds)...[/bold yellow]")
     
@@ -62,7 +63,7 @@ def main():
     old_stdout = sys.stdout
     old_stderr = sys.stderr
     
-    # Create all 6 agents (suppress output)
+    # Create all 7 agents (suppress output)
     sys.stdout = open('nul', 'w') if sys.platform == 'win32' else open('/dev/null', 'w')
     sys.stderr = sys.stdout
     
@@ -72,6 +73,7 @@ def main():
     lab = create_agent("lab_service")
     pharmacy = create_agent("pharmacy")
     bed_mgmt = create_agent("bed_management")
+    whatsapp = create_agent("whatsapp_notification")
     
     # Register agent addresses
     ed_coord.agents = {
@@ -80,6 +82,7 @@ def main():
         "lab_service": lab.agent.address,
         "pharmacy": pharmacy.agent.address,
         "bed_management": bed_mgmt.agent.address,
+        "whatsapp_notification": whatsapp.agent.address,
     }
     
     # Create bureau
@@ -90,13 +93,14 @@ def main():
     bureau.add(lab.agent)
     bureau.add(pharmacy.agent)
     bureau.add(bed_mgmt.agent)
+    bureau.add(whatsapp.agent)
     
     # Restore stdout
     sys.stdout.close()
     sys.stdout = old_stdout
     sys.stderr = old_stderr
     
-    terminal_logger.console.print("[bold green]✅ All 6 agents initialized and ready!\n[/bold green]")
+    terminal_logger.console.print("[bold green]✅ All 7 agents initialized and ready!\n[/bold green]")
     
     # Print demo scenario
     terminal_logger.print_banner("📞 EMERGENCY PATIENT ARRIVING", "bold red")
@@ -248,7 +252,7 @@ def main():
                 # STEP 6: Agent Notification
                 print_step(
                     terminal_logger, 6, "Agent Notification", "📨",
-                    "🏥 [cyan]ED Coordinator[/cyan] broadcasting to all 5 support agents",
+                    "🏥 [cyan]ED Coordinator[/cyan] broadcasting to all 6 support agents",
                     [],
                     "magenta"
                 )
@@ -259,7 +263,8 @@ def main():
                     ("👨‍⚕️", "Specialist Coordinator", "yellow"),
                     ("🧪", "Lab Service", "magenta"),
                     ("💊", "Pharmacy", "blue"),
-                    ("🛏️", "Bed Management", "red")
+                    ("🛏️", "Bed Management", "red"),
+                    ("📱", "WhatsApp Notification", "bright_green")
                 ]
                 
                 for emoji, name, color in agents_list:
@@ -269,9 +274,14 @@ def main():
                     terminal_logger.console.print(
                         f"             Message: [bold]ProtocolActivation[/bold]"
                     )
-                    terminal_logger.console.print(
-                        f"             Content: STEMI protocol for Patient DEMO_PATIENT_001"
-                    )
+                    if name == "WhatsApp Notification":
+                        terminal_logger.console.print(
+                            f"             Content: Sending WhatsApp alerts to cardiologist (+14082109942) and charge nurse (+16693409734)"
+                        )
+                    else:
+                        terminal_logger.console.print(
+                            f"             Content: STEMI protocol for Patient DEMO_PATIENT_001"
+                        )
                     terminal_logger.console.print(
                         f"             Status: ✅ [green]Delivered & Acknowledged[/green]\n"
                     )
@@ -310,13 +320,15 @@ def main():
                 terminal_logger.console.print("  [yellow]STEP 3:[/yellow] Claude AI analyzed with historical context")
                 terminal_logger.console.print("  [green]STEP 4:[/green] Context-aware protocol identified in <2 seconds")
                 terminal_logger.console.print("  [red]STEP 5:[/red] ED Coordinator activated STEMI protocol")
-                terminal_logger.console.print("  [magenta]STEP 6:[/magenta] All 5 support agents notified simultaneously")
+                terminal_logger.console.print("  [magenta]STEP 6:[/magenta] All 6 support agents notified simultaneously")
+                terminal_logger.console.print("  [bright_green]STEP 6b:[/bright_green] 📱 WhatsApp alerts sent to cardiologist (+14082109942) and charge nurse (+16693409734)")
                 terminal_logger.console.print("  [blue]STEP 7:[/blue] 💾 Case stored in Letta for continuous learning\n")
                 
                 terminal_logger.console.print(f"[bold]Performance Metrics:[/bold]")
                 terminal_logger.console.print(f"  • Protocol activation: <5 seconds ⚡")
-                terminal_logger.console.print(f"  • Agents coordinated: 6 (1 coordinator + 5 support)")
-                terminal_logger.console.print(f"  • Messages delivered: 5/5 (100% success rate)")
+                terminal_logger.console.print(f"  • Agents coordinated: 7 (1 coordinator + 6 support)")
+                terminal_logger.console.print(f"  • Messages delivered: 6/6 (100% success rate)")
+                terminal_logger.console.print(f"  • WhatsApp notifications: 2 sent to medical staff")
                 terminal_logger.console.print(f"  • Response time: Faster than traditional manual coordination\n")
                 
                 terminal_logger.console.print("[bold cyan]🎯 Why This Matters:[/bold cyan]\n")

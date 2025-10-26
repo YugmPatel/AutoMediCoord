@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 config = get_config()
 
 def main():
-    """Deploy all 6 EDFlow AI agents to Agentverse via Render"""
+    """Deploy all 7 EDFlow AI agents to Agentverse via Render"""
     
     logger.info("=" * 70)
     logger.info("EDFlow AI - Agentverse Deployment")
@@ -31,9 +31,9 @@ def main():
         return
     
     logger.info("✅ Running in AGENTVERSE mode")
-    logger.info("Creating all 6 agents with mailbox enabled...")
+    logger.info("Creating all 7 agents with mailbox enabled...")
     
-    # Create all 6 agents
+    # Create all 7 agents
     try:
         ed_coord = create_agent("ed_coordinator")
         resource_mgr = create_agent("resource_manager")
@@ -41,8 +41,9 @@ def main():
         lab = create_agent("lab_service")
         pharmacy = create_agent("pharmacy")
         bed_mgmt = create_agent("bed_management")
+        whatsapp = create_agent("whatsapp_notification")
         
-        logger.info("✅ All 6 agents created successfully!")
+        logger.info("✅ All 7 agents created successfully!")
         
         # Print agent addresses
         logger.info("-" * 70)
@@ -53,6 +54,7 @@ def main():
         logger.info(f"  4. Lab Service:             {lab.agent.address}")
         logger.info(f"  5. Pharmacy:                {pharmacy.agent.address}")
         logger.info(f"  6. Bed Management:          {bed_mgmt.agent.address}")
+        logger.info(f"  7. WhatsApp Notification:   {whatsapp.agent.address}")
         logger.info("-" * 70)
         
         # Register agent addresses with ED Coordinator
@@ -62,6 +64,7 @@ def main():
             "lab_service": lab.agent.address,
             "pharmacy": pharmacy.agent.address,
             "bed_management": bed_mgmt.agent.address,
+            "whatsapp_notification": whatsapp.agent.address,
         }
         
         logger.info("✅ Agent addresses registered with ED Coordinator")
@@ -74,9 +77,10 @@ def main():
         bureau.add(lab.agent)
         bureau.add(pharmacy.agent)
         bureau.add(bed_mgmt.agent)
+        bureau.add(whatsapp.agent)
         
         logger.info("=" * 70)
-        logger.info("🚀 Starting Bureau - All Agents Running")
+        logger.info("🚀 Starting Bureau - All 7 Agents Running")
         logger.info("=" * 70)
         logger.info("")
         logger.info("📋 Next Steps:")
@@ -84,6 +88,7 @@ def main():
         logger.info("  2. Open each link to register agents with Agentverse")
         logger.info("  3. Update agent profiles in Agentverse dashboard")
         logger.info("  4. Test agent communication via Agentverse chat")
+        logger.info("  5. Configure WhatsApp API credentials for notifications")
         logger.info("")
         logger.info("🎯 EDFlow AI Multi-Agent System Ready!")
         logger.info("=" * 70)

@@ -438,6 +438,222 @@ class BedManagementAgent(BaseEDFlowAgent):
 
 
 # ============================================================================
+# 7. WHATSAPP NOTIFICATION AGENT
+# ============================================================================
+
+class WhatsAppNotificationAgent(BaseEDFlowAgent):
+    """Sends WhatsApp notifications to medical staff"""
+    
+    def __init__(self):
+        super().__init__("whatsapp_notification", config.WHATSAPP_NOTIFICATION_SEED, config.WHATSAPP_NOTIFICATION_PORT)
+        self.medical_staff_contacts = {
+            "cardiologist": "+14082109942",  # Dr. Martinez
+            "neurologist": "+16693409734",   # Dr. Chen
+            "trauma_surgeon": "+14082109942", # Dr. Smith
+            "pediatrician": "+16693409734",   # Dr. Wilson
+            "on_call_doctor": "+14082109942", # General on-call
+            "charge_nurse": "+16693409734",   # Charge nurse
+            "family_contact": "+14082109942"  # Patient family
+        }
+        self.notification_history = []
+        
+        @self.agent.on_message(model=ProtocolActivation)
+        async def handle_protocol_notification(ctx: Context, sender: str, msg: ProtocolActivation):
+            await self._send_protocol_notifications(ctx, msg)
+        
+        @self.agent.on_message(model=Alert)
+        async def handle_alert_notification(ctx: Context, sender: str, msg: Alert):
+            await self._send_alert_notifications(ctx, msg)
+    
+    async def _send_protocol_notifications(self, ctx: Context, msg: ProtocolActivation):
+        """Send WhatsApp notifications for protocol activations"""
+        logger.info(f"Sending WhatsApp notifications for {msg.protocol_type} protocol")
+        
+        # Track notification event
+        event_tracker.track_event(AgentEvent(
+            timestamp=datetime.utcnow(),
+            event_type=EventType.MESSAGE_SENT,
+            agent_name=self.name,
+            description=f"Sending WhatsApp alerts for {msg.protocol_type.upper()} protocol",
+            patient_id=msg.patient_id,
+            protocol=msg.protocol_type
+        ))
+        
+        # Determine which staff to notify based on protocol
+        notifications = []
+        
+        if msg.protocol_type == "stemi":
+            notifications = [
+                {
+                    "contact": self.medical_staff_contacts["cardiologist"],
+                    "role": "Interventional Cardiologist",
+                    "message": f"🚨 STEMI ALERT\n\nPatient: {msg.patient_id}\nActivation: {msg.activation_time}\nTarget: Cath lab in 5 minutes\n\nPlease respond immediately."
+                },
+                {
+                    "contact": self.medical_staff_contacts["charge_nurse"],
+                    "role": "Charge Nurse",
+                    "message": f"🏥 STEMI Protocol Active\n\nPatient: {msg.patient_id}\nCath lab team needed\nPrepare cardiac medications\n\nETA: 5 minutes"
+                }
+            ]
+        
+        elif msg.protocol_type == "stroke":
+            notifications = [
+                {
+                    "contact": self.medical_staff_contacts["neurologist"],
+                    "role": "Neurologist",
+                    "message": f"🧠 STROKE ALERT\n\nPatient: {msg.patient_id}\nActivation: {msg.activation_time}\nCT scan ordered\ntPA ready\n\nPlease respond immediately."
+                },
+                {
+                    "contact": self.medical_staff_contacts["charge_nurse"],
+                    "role": "Charge Nurse",
+                    "message": f"🏥 Stroke Protocol Active\n\nPatient: {msg.patient_id}\nNeurology team needed\nCT scan priority\n\nETA: 7 minutes"
+                }
+            ]
+        
+        elif msg.protocol_type == "trauma":
+            notifications = [
+                {
+                    "contact": self.medical_staff_contacts["trauma_surgeon"],
+                    "role": "Trauma Surgeon",
+                    "message": f"🚑 TRAUMA ALERT\n\nPatient: {msg.patient_id}\nActivation: {msg.activation_time}\nTrauma bay ready\nBlood bank notified\n\nPlease respond immediately."
+                },
+                {
+                    "contact": self.medical_staff_contacts["charge_nurse"],
+                    "role": "Charge Nurse",
+                    "message": f"🏥 Trauma Protocol Active\n\nPatient: {msg.patient_id}\nTrauma team needed\nBlood products ready\n\nETA: 3 minutes"
+                }
+            ]
+        
+        elif msg.protocol_type == "pediatric":
+            notifications = [
+                {
+                    "contact": self.medical_staff_contacts["pediatrician"],
+                    "role": "Pediatrician",
+                    "message": f"👶 PEDIATRIC ALERT\n\nPatient: {msg.patient_id}\nActivation: {msg.activation_time}\nAge-appropriate equipment ready\n\nPlease respond immediately."
+                }
+            ]
+        
+        # Send notifications (simulated for demo)
+        for notification in notifications:
+            await self._send_whatsapp_message(
+                notification["contact"],
+                notification["role"],
+                notification["message"],
+                msg.patient_id,
+                msg.protocol_type
+            )
+    
+    async def _send_alert_notifications(self, ctx: Context, msg: Alert):
+        """Send WhatsApp notifications for general alerts"""
+        logger.info(f"Sending WhatsApp alert: {msg.alert_type}")
+        
+        # Send to appropriate staff based on alert type
+        if msg.alert_type == "resource_shortage":
+            await self._send_whatsapp_message(
+                self.medical_staff_contacts["charge_nurse"],
+                "Charge Nurse",
+                f"⚠️ RESOURCE ALERT\n\n{msg.message}\n\nImmediate attention required.",
+                alert_id=msg.alert_id
+            )
+        
+        elif msg.alert_type == "system_overload":
+            await self._send_whatsapp_message(
+                self.medical_staff_contacts["on_call_doctor"],
+                "On-Call Doctor",
+                f"🚨 SYSTEM OVERLOAD\n\n{msg.message}\n\nConsider diversion protocols.",
+                alert_id=msg.alert_id
+            )
+    
+    async def _send_whatsapp_message(self, phone_number: str, role: str, message: str, patient_id: str = None, protocol: str = None, alert_id: str = None):
+        """Send WhatsApp message using Twilio API (simulated for demo)"""
+        try:
+            # For demo purposes, we'll simulate the WhatsApp sending
+            # In production, this would use Twilio WhatsApp API
+            
+            notification_record = {
+                "timestamp": datetime.utcnow(),
+                "phone_number": phone_number,
+                "role": role,
+                "message": message,
+                "patient_id": patient_id,
+                "protocol": protocol,
+                "alert_id": alert_id,
+                "status": "sent",  # In demo mode, always "sent"
+                "delivery_status": "delivered"  # Simulated delivery
+            }
+            
+            self.notification_history.append(notification_record)
+            
+            # Track the notification
+            event_tracker.track_event(AgentEvent(
+                timestamp=datetime.utcnow(),
+                event_type=EventType.MESSAGE_SENT,
+                agent_name=self.name,
+                description=f"📱 WhatsApp sent to {role} ({phone_number[-4:]}): {message[:50]}...",
+                patient_id=patient_id,
+                protocol=protocol,
+                details={
+                    "notification_type": "whatsapp",
+                    "recipient_role": role,
+                    "message_length": len(message)
+                }
+            ))
+            
+            logger.info(f"📱 WhatsApp notification sent to {role} ({phone_number[-4:]})")
+            
+            # Real WhatsApp sending with Twilio API
+            if config.TWILIO_ACCOUNT_SID and config.TWILIO_AUTH_TOKEN and config.WHATSAPP_ENABLED:
+                try:
+                    from twilio.rest import Client
+                    client = Client(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
+                    
+                    twilio_message = client.messages.create(
+                        from_='whatsapp:+14155238886',  # Twilio sandbox number
+                        body=message,
+                        to=f'whatsapp:{phone_number}'
+                    )
+                    
+                    logger.info(f"📱 Real WhatsApp sent to {role}: {twilio_message.sid}")
+                    notification_record["twilio_sid"] = twilio_message.sid
+                    notification_record["delivery_status"] = "sent"
+                    
+                except Exception as twilio_error:
+                    logger.error(f"Twilio WhatsApp failed: {str(twilio_error)}")
+                    notification_record["delivery_status"] = "failed"
+                    notification_record["error"] = str(twilio_error)
+            else:
+                logger.info(f"📱 WhatsApp simulation mode (no Twilio credentials)")
+                notification_record["delivery_status"] = "simulated"
+            
+        except Exception as e:
+            logger.error(f"Failed to send WhatsApp notification: {str(e)}")
+            
+            # Track failed notification
+            event_tracker.track_event(AgentEvent(
+                timestamp=datetime.utcnow(),
+                event_type=EventType.ERROR,
+                agent_name=self.name,
+                description=f"❌ WhatsApp notification failed to {role}: {str(e)}",
+                patient_id=patient_id,
+                protocol=protocol
+            ))
+    
+    async def on_message(self, ctx: Context, sender: str, text: str):
+        """Handle chat messages for WhatsApp agent"""
+        if "notification" in text.lower() or "alert" in text.lower():
+            response = f"📱 WhatsApp Notification Agent Status:\n\n"
+            response += f"• Total notifications sent today: {len(self.notification_history)}\n"
+            response += f"• Medical staff contacts: {len(self.medical_staff_contacts)}\n"
+            response += f"• Last notification: {self.notification_history[-1]['timestamp'].strftime('%H:%M:%S') if self.notification_history else 'None'}\n\n"
+            response += "Ready to send emergency alerts to medical staff via WhatsApp."
+            
+            await self.send_message(ctx, sender, response)
+        else:
+            await self.send_message(ctx, sender,
+                "📱 WhatsApp Notification Agent ready. I send emergency alerts to medical staff when protocols are activated.")
+
+
+# ============================================================================
 # AGENT FACTORY
 # ============================================================================
 
@@ -450,6 +666,7 @@ def create_agent(agent_type: str):
         "lab_service": LabServiceAgent,
         "pharmacy": PharmacyAgent,
         "bed_management": BedManagementAgent,
+        "whatsapp_notification": WhatsAppNotificationAgent,
     }
     
     if agent_type not in agents:

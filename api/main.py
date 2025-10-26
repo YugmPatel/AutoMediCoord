@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Starting EDFlow AI API Server...")
     
     try:
-        # Create all 6 uAgents
+        # Create all 7 uAgents
         logger.info("Creating uAgents...")
         ed_coordinator = create_agent("ed_coordinator")
         all_agents = {
@@ -48,13 +48,14 @@ async def lifespan(app: FastAPI):
             "lab_service": create_agent("lab_service"),
             "pharmacy": create_agent("pharmacy"),
             "bed_management": create_agent("bed_management"),
+            "whatsapp_notification": create_agent("whatsapp_notification"),
         }
         
         # Setup agent communication with WebSocket
         if ws_manager:
             await ws_manager.setup_agent_listeners(all_agents)
         
-        logger.info("✅ All agents created and configured")
+        logger.info("✅ All 7 agents created and configured")
         api_port = getattr(config, 'API_PORT', 8080)
         logger.info(f"🏥 EDFlow AI API Server ready on port {api_port}")
         

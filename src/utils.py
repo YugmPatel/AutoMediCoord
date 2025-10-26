@@ -33,6 +33,7 @@ class Config:
     LAB_SERVICE_SEED: str = os.getenv("LAB_SERVICE_SEED", "lab_service_seed")
     PHARMACY_SEED: str = os.getenv("PHARMACY_SEED", "pharmacy_seed")
     BED_MANAGEMENT_SEED: str = os.getenv("BED_MANAGEMENT_SEED", "bed_management_seed")
+    WHATSAPP_NOTIFICATION_SEED: str = os.getenv("WHATSAPP_NOTIFICATION_SEED", "whatsapp_notification_seed")
     
     # Agent Ports
     ED_COORDINATOR_PORT: int = int(os.getenv("ED_COORDINATOR_PORT", "8000"))
@@ -41,6 +42,12 @@ class Config:
     LAB_SERVICE_PORT: int = int(os.getenv("LAB_SERVICE_PORT", "8003"))
     PHARMACY_PORT: int = int(os.getenv("PHARMACY_PORT", "8004"))
     BED_MANAGEMENT_PORT: int = int(os.getenv("BED_MANAGEMENT_PORT", "8005"))
+    WHATSAPP_NOTIFICATION_PORT: int = int(os.getenv("WHATSAPP_NOTIFICATION_PORT", "8006"))
+    
+    # WhatsApp Configuration
+    TWILIO_ACCOUNT_SID: str = os.getenv("TWILIO_ACCOUNT_SID", "")
+    TWILIO_AUTH_TOKEN: str = os.getenv("TWILIO_AUTH_TOKEN", "")
+    WHATSAPP_ENABLED: bool = os.getenv("WHATSAPP_ENABLED", "true").lower() == "true"
     
     # Deployment
     DEPLOYMENT_MODE: str = os.getenv("DEPLOYMENT_MODE", "local")

@@ -51,6 +51,7 @@ class AgentType(str, Enum):
     LAB_SERVICE = "lab_service"
     PHARMACY = "pharmacy"
     BED_MANAGEMENT = "bed_management"
+    WHATSAPP_NOTIFICATION = "whatsapp_notification"
 
 # Core Models
 class PatientVitals(BaseModel):

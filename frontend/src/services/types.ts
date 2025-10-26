@@ -61,7 +61,8 @@ export interface ChatMessage {
     | "specialist_coordinator"
     | "lab_service"
     | "pharmacy"
-    | "bed_management";
+    | "bed_management"
+    | "whatsapp_notification";
 }
 
 export interface AgentStatus {
