@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: automedicoord-agents
+    name: EDFlow AI-agents
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt

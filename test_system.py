@@ -15,7 +15,7 @@ from pathlib import Path
 # Add paths for imports
 current_dir = Path(__file__).parent
 sys.path.insert(0, str(current_dir))
-sys.path.insert(0, str(current_dir / "AutoMediCoord"))
+sys.path.insert(0, str(current_dir / "EDFlow AI"))
 
 class SystemTester:
     def __init__(self):

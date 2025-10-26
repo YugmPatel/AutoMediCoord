@@ -48,7 +48,7 @@ frontend/
 ### Prerequisites
 
 - Node.js 18+ and npm
-- AutoMediCoord backend running on port 8080
+- EDFlow AI backend running on port 8080
 
 ### Installation
 

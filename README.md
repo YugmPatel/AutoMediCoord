@@ -97,19 +97,19 @@ Key Data Flows:
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/YugmPatel/AutoMediCoord.git
-cd AutoMediCoord
+git clone https://github.com/YugmPatel/EDFlowAI.git
+cd EDFlowAI
 ```
 
 ### 2. Setup Backend (uAgents + API)
 
 ```bash
 # Install Python dependencies
-pip install -r AutoMediCoord/requirements.txt
+pip install -r EDFlowAI/requirements.txt
 pip install -r api_requirements.txt
 
 # Configure environment
-cp AutoMediCoord/.env.example .env
+cp EDFlowAI/.env.example .env
 # Edit .env with your ANTHROPIC_API_KEY
 ```
 
@@ -440,8 +440,8 @@ This data is then used to:
 ## 📁 Project Structure
 
 ```
-AutoMediCoord/
-├── AutoMediCoord/           # Original uAgents backend
+EDFlowAI/
+├── EDFlowAI/           # Original uAgents backend
 │   ├── app.py              # Main uAgents application
 │   ├── src/                # Agent source code
 │   │   ├── agents.py       # 6 specialized agents
@@ -630,7 +630,7 @@ For questions about this implementation:
 
 - Check the `/docs` endpoint for API documentation
 - Review component documentation in `frontend/src/`
-- See agent implementation in `AutoMediCoord/src/`
+- See agent implementation in `EDFlowAI/src/`
 
 ---
 

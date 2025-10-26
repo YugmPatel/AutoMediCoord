@@ -13,10 +13,10 @@ from pathlib import Path
 # Add the current directory to Python path
 current_dir = Path(__file__).parent.absolute()
 sys.path.insert(0, str(current_dir))
-sys.path.insert(0, str(current_dir / "AutoMediCoord"))
+sys.path.insert(0, str(current_dir / "EDFlow AI"))
 
 # Set PYTHONPATH environment variable
-os.environ['PYTHONPATH'] = f"{current_dir}:{current_dir / 'AutoMediCoord'}"
+os.environ['PYTHONPATH'] = f"{current_dir}:{current_dir / 'EDFlow AI'}"
 
 def main():
     """Main entry point for API server"""
@@ -51,7 +51,7 @@ def main():
     except ImportError as e:
         print(f"❌ Import error: {e}")
         print("Make sure you have installed the required dependencies:")
-        print("pip install -r AutoMediCoord/requirements.txt")
+        print("pip install -r EDFlow AI/requirements.txt")
         print("pip install -r api_requirements.txt")
         sys.exit(1)
     except Exception as e:
