@@ -14,7 +14,7 @@ from anthropic import AsyncAnthropic
 AGENT_SEED = "lab_service_phrase_001"
 JSONBIN_ID = "68fd4c71ae596e708f2c8fb0"
 JSONBIN_KEY = "$2a$10$rwAXxHjp0m8RC1pL5BIW5.bc0orN3f3PivMK6lNPLOw1Gmh333uSa"
-ANTHROPIC_KEY = "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"
+ANTHROPIC_KEY = ""
 
 agent = Agent(name="lab_service", seed=AGENT_SEED, port=8002)
 protocol = Protocol(spec=chat_protocol_spec)
