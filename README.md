@@ -1,13 +1,33 @@
 # 🏥 EDFlow AI - Multi-Agent Emergency Department Coordination System
 
+![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
+![tag:hackathon](https://img.shields.io/badge/hackathon-5F43F1)
 [![Fetch.ai](https://img.shields.io/badge/Fetch.ai-uAgents-00D4FF)](https://fetch.ai)
 [![Claude AI](https://img.shields.io/badge/Claude-AI-purple)](https://anthropic.com)
 [![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
 
 **Autonomous Multi-Agent System for Emergency Department Optimization**
 
-> **Achievement:** 50% reduction in door-to-balloon time through intelligent agent coordination  
+> **Achievement:** 50% reduction in door-to-balloon time through intelligent agent coordination
 > **Technology:** Fetch.ai uAgents + Claude AI + Real-time Dashboard
+
+---
+
+## 🤖 Deployed Agents
+
+All agents are live on Fetch.ai Agentverse and accessible via ASI:One:
+
+| Agent Name | Role | Agent Address | Agentverse Profile |
+|------------|------|---------------|-------------------|
+| **ED Coordinator** | Central orchestrator, protocol detection | `agent1qff3y8ry6jew53lgc5gxzg8cqc3cc505c5n0rwcntpwe2ydvz23gxc36xh4` | [View Profile](https://agentverse.ai/agents/details/agent1qff3y8ry6jew53lgc5gxzg8cqc3cc505c5n0rwcntpwe2ydvz23gxc36xh4/profile) |
+| **Resource Manager** | Capacity management, bay allocation | `agent1qdentzr0unjc5t8sylsha2ugv5yecpf80jw67qwwu4glgc84rr9u6w98f0c` | [View Profile](https://agentverse.ai/agents/details/agent1qdentzr0unjc5t8sylsha2ugv5yecpf80jw67qwwu4glgc84rr9u6w98f0c/profile) |
+| **Specialist Coordinator** | Physician paging, team activation | `agent1qw4g3efd5t7ve83gmq3yp7dkzzmg7g4z480cunk8rru4yhw5x2k979ddxgk` | [View Profile](https://agentverse.ai/agents/details/agent1qw4g3efd5t7ve83gmq3yp7dkzzmg7g4z480cunk8rru4yhw5x2k979ddxgk/profile) |
+| **Lab Service** | STAT tests, diagnostic equipment | `agent1qfx6rpglgl86s8072ja8y7fkk9pfg5csa2jg7h2vgkl2nztt2fctye7wngx` | [View Profile](https://agentverse.ai/agents/details/agent1qfx6rpglgl86s8072ja8y7fkk9pfg5csa2jg7h2vgkl2nztt2fctye7wngx/profile) |
+| **Pharmacy** | Medication preparation, drug staging | `agent1qd6j2swdef06tgl4ly66r65c4vz6rcggt7rm89udnuvmn8n2y90myq46rfl` | [View Profile](https://agentverse.ai/agents/details/agent1qd6j2swdef06tgl4ly66r65c4vz6rcggt7rm89udnuvmn8n2y90myq46rfl/profile) |
+| **Bed Management** | ICU bed reservation, equipment | `agent1qdvph9h02dhvs4vfk032hmpuaz3tm65p6n3ksgd9q5d22xyln3vqgkp2str` | [View Profile](https://agentverse.ai/agents/details/agent1qdvph9h02dhvs4vfk032hmpuaz3tm65p6n3ksgd9q5d22xyln3vqgkp2str/profile) |
+| **WhatsApp Notification** | Real-time staff alerts | `agent1qwy3cayvacfc0lrlmaa3tlqs30tqvvl78lnlc2ja7ff8pkmey863venry0q` | [View Profile](https://agentverse.ai/agents/details/agent1qwy3cayvacfc0lrlmaa3tlqs30tqvvl78lnlc2ja7ff8pkmey863venry0q/profile) |
+
+**Try it now:** Search for "ED Coordinator" on [ASI:One](https://app.fetch.ai) and send an ambulance report!
 
 ---
 
