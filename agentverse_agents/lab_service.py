@@ -41,7 +41,38 @@ async def handle_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
     pass
 
 async def process_lab_query(ctx: Context, query: str) -> str:
-    if any(word in query for word in ["status", "pending", "queue"]):
+    # 🚑 AMBULANCE REPORT RESPONSE
+    if any(word in query for word in ["ambulance", "incoming", "protocol", "action required"]):
+        protocol = "General"
+        if "STEMI" in query or "chest pain" in query.lower():
+            protocol = "STEMI"
+            tests = "Troponin, ECG, CBC, BMP, PT/INR"
+        elif "Stroke" in query or "stroke" in query.lower():
+            protocol = "Stroke"
+            tests = "CT Head, CBC, BMP, PT/INR, Glucose"
+        elif "Trauma" in query or "trauma" in query.lower():
+            protocol = "Trauma"
+            tests = "Type & Cross, CBC, BMP, Lactate, ABG"
+        else:
+            tests = "CBC, BMP, Troponin"
+        
+        return f"""✅ LAB SERVICE RESPONSE - {protocol} Protocol
+
+🧪 LABS PREPARED:
+• STAT Orders: {tests}
+• Priority: CRITICAL
+• Turnaround: <15 minutes
+• Phlebotomy: Standing by
+
+📊 Lab Status:
+• Equipment: Calibrated and ready
+• Reagents: Stocked
+• Staff: Alerted for STAT processing
+
+⏱️ Ready for immediate sample processing
+🎯 Results will be expedited"""
+    
+    elif any(word in query for word in ["status", "pending", "queue"]):
         return f"""🧪 Lab Status:
 • Pending Orders: {ctx.storage.get('pending_orders')}
 • Completed Today: {ctx.storage.get('completed_today')}

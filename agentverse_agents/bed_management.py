@@ -45,7 +45,47 @@ async def handle_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
     pass
 
 async def process_bed_query(ctx: Context, query: str) -> str:
-    if any(word in query for word in ["icu", "intensive"]):
+    # 🚑 AMBULANCE REPORT RESPONSE
+    if any(word in query for word in ["ambulance", "incoming", "protocol", "action required"]):
+        protocol = "General"
+        if "STEMI" in query or "chest pain" in query.lower():
+            protocol = "STEMI"
+            bed = "Cardiac ICU Bed 3"
+            prep = "Cardiac monitoring, defibrillator"
+        elif "Stroke" in query or "stroke" in query.lower():
+            protocol = "Stroke"
+            bed = "Neuro ICU Bed 2"
+            prep = "Neuro monitoring, CT access"
+        elif "Trauma" in query or "trauma" in query.lower():
+            protocol = "Trauma"
+            bed = "Trauma Bay 1"
+            prep = "Full trauma setup, OR ready"
+        else:
+            bed = "ED Bed 5"
+            prep = "Standard monitoring"
+        
+        icu_available = ctx.storage.get("icu_available")
+        if icu_available > 0:
+            ctx.storage.set("icu_available", icu_available - 1)
+        
+        return f"""✅ BED MANAGEMENT RESPONSE - {protocol} Protocol
+
+🛏️ BED ASSIGNED:
+• Bed: {bed} (RESERVED)
+• Location: Critical care area
+• Equipment: {prep}
+• Status: Cleaned and ready
+
+📊 Bed Status:
+• ICU Beds: {ctx.storage.get('icu_available')}/{ctx.storage.get('icu_total')}
+• Step-Down: {ctx.storage.get('step_down_available')}/{ctx.storage.get('step_down_total')}
+• Turnover: Complete
+• Housekeeping: Notified for post-care
+
+⏱️ Bed ready for immediate occupancy
+🎯 Direct admit pathway activated"""
+    
+    elif any(word in query for word in ["icu", "intensive"]):
         available = ctx.storage.get("icu_available")
         total = ctx.storage.get("icu_total")
         return f"""🛏️ ICU Beds:

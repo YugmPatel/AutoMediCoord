@@ -42,7 +42,43 @@ async def handle_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
     pass
 
 async def process_specialist_query(ctx: Context, query: str) -> str:
-    if any(word in query for word in ["status", "active", "teams"]):
+    # 🚑 AMBULANCE REPORT RESPONSE
+    if any(word in query for word in ["ambulance", "incoming", "protocol", "action required"]):
+        protocol = "General"
+        if "STEMI" in query or "chest pain" in query.lower():
+            protocol = "STEMI"
+            team = "Cardiology team (Dr. Smith, Cath Lab ready)"
+            eta = "3 minutes"
+        elif "Stroke" in query or "stroke" in query.lower():
+            protocol = "Stroke"
+            team = "Neurology team (Dr. Johnson, CT ready)"
+            eta = "4 minutes"
+        elif "Trauma" in query or "trauma" in query.lower():
+            protocol = "Trauma"
+            team = "Trauma surgery team (Dr. Williams, OR alerted)"
+            eta = "2 minutes"
+        else:
+            team = "ED attending physician"
+            eta = "5 minutes"
+        
+        return f"""✅ SPECIALIST COORDINATOR RESPONSE - {protocol} Protocol
+
+👨‍⚕️ TEAM ACTIVATED:
+• Team: {team}
+• ETA: {eta}
+• Status: Paged and responding
+• Backup: On standby
+
+📊 Team Status:
+• Primary team: En route
+• Support staff: Alerted
+• Equipment: Prepared
+• Procedure room: Reserved
+
+⏱️ Team assembling now
+🎯 Ready for immediate intervention"""
+    
+    elif any(word in query for word in ["status", "active", "teams"]):
         return f"""👨‍⚕️ Specialist Status:
 • Active Teams: {ctx.storage.get('active_teams')}
 • Activations Today: {ctx.storage.get('completed_activations_today')}

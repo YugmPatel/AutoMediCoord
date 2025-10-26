@@ -43,7 +43,39 @@ async def handle_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
     pass
 
 async def process_resource_query(ctx: Context, query: str) -> str:
-    if any(word in query for word in ["bed", "beds"]):
+    # 🚑 AMBULANCE REPORT RESPONSE
+    if any(word in query for word in ["ambulance", "incoming", "protocol", "action required"]):
+        # Determine protocol type
+        protocol = "General"
+        if "STEMI" in query or "chest pain" in query.lower():
+            protocol = "STEMI"
+        elif "Stroke" in query or "stroke" in query.lower():
+            protocol = "Stroke"
+        elif "Trauma" in query or "trauma" in query.lower():
+            protocol = "Trauma"
+        
+        # Allocate resources based on protocol
+        beds_available = ctx.storage.get("beds_available")
+        if beds_available > 0:
+            ctx.storage.set("beds_available", beds_available - 1)
+        
+        return f"""✅ RESOURCE MANAGER RESPONSE - {protocol} Protocol
+
+🛏️ RESOURCES ALLOCATED:
+• Bed: Trauma Bay 1 (RESERVED)
+• Equipment: Cardiac monitor, defibrillator, crash cart
+• Room: Resuscitation Room A
+• Supplies: IV setup, oxygen ready
+
+📊 Current Status:
+• Beds Available: {ctx.storage.get('beds_available')}/{ctx.storage.get('beds_total')}
+• Equipment: Staged and ready
+• Room: Cleaned and prepared
+
+⏱️ Ready for patient arrival
+🎯 All resources standing by"""
+    
+    elif any(word in query for word in ["bed", "beds"]):
         available = ctx.storage.get("beds_available")
         total = ctx.storage.get("beds_total")
         return f"""🛏️ Bed Availability:
@@ -66,7 +98,7 @@ async def process_resource_query(ctx: Context, query: str) -> str:
         return """🛏️ Resource Manager
 
 I manage ED resources:
-• Beds (ICU, regular, observation)  
+• Beds (ICU, regular, observation)
 • Equipment
 • Exam rooms
 

@@ -28,7 +28,6 @@ async def initialize(ctx: Context):
     ctx.storage.set("staff_on_duty", 25)
     ctx.storage.set("system_load", "medium")
     
-    # Protocol statistics
     ctx.storage.set("protocol_stats", {
         "stemi": {"active": 0, "total_today": 0, "avg_time": 4.5, "success_rate": 0.95},
         "stroke": {"active": 0, "total_today": 0, "avg_time": 6.2, "success_rate": 0.93},
@@ -50,8 +49,6 @@ async def initialize(ctx: Context):
     ctx.logger.info(f"📍 Agent address: {ctx.agent.address}")
     ctx.logger.info(f"✅ Chat Protocol enabled - Ready for ASI:One")
     ctx.logger.info(f"🚑 Ambulance broadcast system enabled")
-
-
 
 @protocol.on_message(ChatMessage)
 async def handle_chat(ctx: Context, sender: str, msg: ChatMessage):
@@ -91,11 +88,9 @@ async def handle_chat(ctx: Context, sender: str, msg: ChatMessage):
     
     ctx.logger.info(f"✅ Response sent")
 
-
 @protocol.on_message(ChatAcknowledgement)
 async def handle_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
     ctx.logger.debug(f"Ack received: {msg.acknowledged_msg_id}")
-
 
 async def process_query(ctx: Context, query: str) -> str:
     if any(word in query for word in ["ambulance", "patient arriving", "ems", "incoming patient", "chest pain", "stroke", "trauma", "critical"]):
@@ -226,7 +221,6 @@ I can provide information about:
 Please ask me about any of these topics, or type "help" for more information."""
         return response
 
-
 async def broadcast_to_all_agents(ctx: Context, ambulance_report: str, protocol_type: str):
     agent_addresses = ctx.storage.get("agent_addresses")
     
@@ -265,7 +259,6 @@ Please respond with your preparation status."""
         else:
             ctx.logger.warning(f"⚠️  {agent_name} address not configured")
 
-
 @agent.on_interval(period=60.0)
 async def periodic_health_check(ctx: Context):
     active_cases = ctx.storage.get("active_cases")
@@ -276,7 +269,6 @@ async def periodic_health_check(ctx: Context):
     ctx.logger.info(f"   📊 Active Cases: {len(active_cases)}")
     ctx.logger.info(f"   🛏️  Available Beds: {available_beds}")
     ctx.logger.info(f"   📞 Total Queries: {total_queries}")
-
 
 agent.include(protocol, publish_manifest=True)
 

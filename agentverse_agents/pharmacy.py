@@ -41,7 +41,38 @@ async def handle_ack(ctx: Context, sender: str, msg: ChatAcknowledgement):
     pass
 
 async def process_pharmacy_query(ctx: Context, query: str) -> str:
-    if any(word in query for word in ["status", "pending", "queue"]):
+    # 🚑 AMBULANCE REPORT RESPONSE
+    if any(word in query for word in ["ambulance", "incoming", "protocol", "action required"]):
+        protocol = "General"
+        if "STEMI" in query or "chest pain" in query.lower():
+            protocol = "STEMI"
+            meds = "Aspirin 325mg, Heparin, Nitroglycerin, Morphine"
+        elif "Stroke" in query or "stroke" in query.lower():
+            protocol = "Stroke"
+            meds = "Alteplase (tPA), Labetalol, Mannitol"
+        elif "Trauma" in query or "trauma" in query.lower():
+            protocol = "Trauma"
+            meds = "Tranexamic acid, Morphine, Ceftriaxone, Tetanus"
+        else:
+            meds = "Standard emergency medications"
+        
+        return f"""✅ PHARMACY RESPONSE - {protocol} Protocol
+
+💊 MEDICATIONS PREPARED:
+• STAT Meds: {meds}
+• Priority: IMMEDIATE
+• Delivery: <5 minutes
+• Dosing: Pre-calculated
+
+📊 Pharmacy Status:
+• Medications: Drawn and labeled
+• IV Solutions: Prepared
+• Crash Cart: Stocked and checked
+
+⏱️ Ready for immediate administration
+🎯 Pharmacist standing by for consult"""
+    
+    elif any(word in query for word in ["status", "pending", "queue"]):
         return f"""💊 Pharmacy Status:
 • Pending Orders: {ctx.storage.get('pending_orders')}
 • Delivered Today: {ctx.storage.get('delivered_today')}
